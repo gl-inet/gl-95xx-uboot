@@ -234,6 +234,8 @@ void athrs17_vlan_config()
 		unsigned int old_val=0;
 		count=sizeof(athrPhyInfo)/sizeof(athrPhyInfo[0]);
 
+		//port 0connect to CPU,set VID to 0x00
+		athrs17_reg_write(S17_P0VLAN_CTRL0_REG+phy_addr,0);
 		/*port0 connect to cpu,setup port1 - port5*/
 		for(phy_addr=1;phy_addr < count;phy_addr++){
 

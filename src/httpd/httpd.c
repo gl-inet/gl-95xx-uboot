@@ -181,8 +181,24 @@ static int httpd_findandstore_firstchunk(void){
 
 					}
 					else{
-						printf("## Error: input name not found!\n");
-						return(0);
+						end=(char *)strstr((char *)start, "name=\"gl_firmware\"");
+						if(end){
+								if(strstr((char *)start, ".img\"")){
+										webfailsafe_upgrade_type = WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE;
+									}
+								else if(strstr((char *)start, ".bin\"")){
+									
+										webfailsafe_upgrade_type = WEBFAILSAFE_UPGRADE_TYPE_NOR_FIRMWARE;
+									}
+								else{
+										printf("## Error: input file format error!\n");
+										return(0);
+									}
+							}
+						else{
+							printf("## Error: input name not found!\n");
+							return(0);
+							}
 					}
 
 				}

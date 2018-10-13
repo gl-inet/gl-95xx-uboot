@@ -72,7 +72,7 @@
 #elif defined(CONFIG_FOR_DRAGINO_V2)
         #define WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS                       WEBFAILSAFE_UPLOAD_UBOOT_ADDRESS + 0x40000
 #elif defined(CONFIG_FOR_GL_BOARD)					
-	#define WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS			WEBFAILSAFE_UPLOAD_UBOOT_ADDRESS + 0x60000
+	#define WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS			GL_BOOT_ADDR
 	#define WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE			0x200000
 #else
         #define WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS                       WEBFAILSAFE_UPLOAD_UBOOT_ADDRESS + 0x20000
@@ -134,6 +134,9 @@
 #define FLASH_SIZE 8
 #endif
 
+#define _TO_STR(a) #a
+#define TO_STR(a) _TO_STR(a)
+
 #define CONFIG_SYS_VSNPRINTF
 /*-----------------------------------------------------------------------
  * FLASH and environment organization
@@ -147,13 +150,14 @@
 
 #define COMMAND_RLF "if ping $serverip; then tftp $loadaddr $firmware_nor_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi" 
 
-#define VAR_FIRMWARE_ADDR 0x9f060000
+#define VAR_FIRMWARE_ADDR GL_BOOT_ADDR
 #define VAR_FIRMWARE_NOR_NAME  "openwrt-gl-"CONFIG_BOARD_NAME".bin"
 #define VAR_FIRMWARE_NAND_NAME "openwrt-gl-"CONFIG_BOARD_NAME".img"
 
 #define COMMAND_LU "if ping $serverip; then tftp $loadaddr $uboot_name && erase $uboot_addr +$uboot_size && cp.b $fileaddr $uboot_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi"
 
-#define COMMAND_LC "tftp 0x81000000 config.bin && cp.b 0x9f050040 0x81000040 0xffc0 && cp.b 0x81000000 0x81001002 0x06 && erase 0x9f050000 +0xffff && cp.b 0x81000000 0x9f050000 0xffff"
+#define COMMAND_LC "tftp 0x80100000 config.bin && cp.b "TO_STR(GL_ART_ADDR)" 0x81000000 0xffff && cp.b 0x80100000 0x81000000 0x40 && cp.b 0x80100000 0x81001002 0x06 && erase "TO_STR(GL_ART_ADDR)\
+" +0xffff && cp.b 0x81000000 "TO_STR(GL_ART_ADDR)" 0xffff"
 
 #define VAR_UBOOT_ADDR	0x9f000000
 #define VAR_UBOOT_SIZE	0x00050000

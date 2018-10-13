@@ -39,6 +39,7 @@
 /* for isdigit() */
 #include <linux/ctype.h>
 #include <asm-mips/string.h>
+#include <config.h>
 
 #ifdef CONFIG_SILENT_CONSOLE
 DECLARE_GLOBAL_DATA_PTR;
@@ -539,24 +540,28 @@ void main_loop (void)
                  * 1 : calibrated, and but need to write config
                  * 2 : calibrated, and config ready
                 */
+		char boot_cmd[30]={0};
 		switch(status){
                         case 6:goto mainloop;break;
                         case 4:
                         case 5:
                         case 3:
-                               printf("Booting image at: 0x9F060000\n");
-                               run_command("bootm 0x9f060000",0);
+                               printf("Booting image at: 0x%X\n",GL_BOOT_ADDR);
+							   sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);
+                               run_command(boot_cmd,0);
                                 goto mainloop;break;
                         //case 3:run_command("run lc",0);break;
                         case 2:
-                        case 0:printf("Booting image at: 0x9F060000\n");break;
+                        case 0:printf("Booting image at: 0x%X\n",GL_BOOT_ADDR);break;
                         case 1:printf("Booting image at: 0x81000000\n");break;
                         default:break;
                 }
         check_tftp_file();
         select_boot_dev();
-        if(nand_boot_failed)
-        run_command("bootm 0x9f060000",0);
+        if(nand_boot_failed){
+			sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);
+            run_command(boot_cmd,0);
+		}
 # ifndef CFG_HUSH_PARSER
 		run_command (s, 0);
 # else

@@ -68,7 +68,7 @@ int select_boot_dev(){
  * @return: 1: done 0: not done
  */
 int test_done(void){
-	volatile unsigned int *s=(volatile unsigned int *)0x9f050060;
+	volatile unsigned int *s=(volatile unsigned int *)(GL_ART_ADDR + 0X60);
 	if(*s==0x7365636f) //seco
 		return 1;
 	return 0;
@@ -89,12 +89,12 @@ int calibration_status(void){
 	int has_test=0;
 	int has_nand=0;
 	//volatile unsigned long *art_cal=(volatile unsigned long *)0x9f3f1000;
-	volatile unsigned short *art_final=(volatile unsigned short *)0x9f051000;
-	volatile unsigned int *config_data=(volatile unsigned int *)0x9f050010;
+	volatile unsigned short *art_final=(volatile unsigned short *)(GL_ART_ADDR + 0X1000);
+	volatile unsigned int *config_data=(volatile unsigned int *)(GL_ART_ADDR + 0X10);
 //	volatile unsigned long *abeg=(volatile unsigned long *)0x9fff1138;
-	volatile unsigned char *v2=(volatile unsigned char *)0x9f05108f;
-	volatile unsigned char *v3=(volatile unsigned char *)0x9f051095;
-	volatile unsigned char *v4=(volatile unsigned char *)0x9f05109b;
+	volatile unsigned char *v2=(volatile unsigned char *)(GL_ART_ADDR + 0X108f);
+	volatile unsigned char *v3=(volatile unsigned char *)(GL_ART_ADDR + 0X1095);
+	volatile unsigned char *v4=(volatile unsigned char *)(GL_ART_ADDR + 0X109b);
 
 //	int has_art_cal=0;
 //	if((*abeg & 0x0000ffff)==0x4142 && *(abeg+1)==0x45473132){

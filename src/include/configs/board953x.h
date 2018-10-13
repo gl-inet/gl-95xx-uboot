@@ -12,8 +12,10 @@
  *
  */
 
-#ifndef __BOARD_955X_H
-#define __BOARD_955X_H
+#ifndef __BOARD_953X_H
+#define __BOARD_953X_H
+
+#include <config.h>
 /* ethernet debug */
 /* #define ET_DEBUG */
 
@@ -61,7 +63,7 @@
 #elif defined(CONFIG_FOR_DRAGINO_V2)
         #define WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS                       WEBFAILSAFE_UPLOAD_UBOOT_ADDRESS + 0x40000
 #elif defined(CONFIG_FOR_GL_BOARD)					
-	#define WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS			WEBFAILSAFE_UPLOAD_UBOOT_ADDRESS + 0x60000
+	#define WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS			GL_BOOT_ADDR
 #else
         #define WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS                       WEBFAILSAFE_UPLOAD_UBOOT_ADDRESS + 0x20000
 #endif
@@ -128,6 +130,9 @@
 #define ATH_DUAL_NOR		1
 #endif
 
+#define _TO_STR(a) #a
+#define TO_STR(a) _TO_STR(a)
+
 #define CONFIG_SYS_VSNPRINTF
 
 /*
@@ -136,12 +141,13 @@
 
 #define COMMAND_LF "if ping $serverip; then tftp $loadaddr $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi" 
 
-#define VAR_FIRMWARE_ADDR 0x9f060000
+#define VAR_FIRMWARE_ADDR GL_BOOT_ADDR
 #define VAR_FIRMWARE_NAME "openwrt-gl-"CONFIG_BOARD_NAME".bin"
 
 #define COMMAND_LU "if ping $serverip; then tftp $loadaddr $uboot_name && erase $uboot_addr +$uboot_size && cp.b $fileaddr $uboot_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi"
 
-#define COMMAND_LC "tftp 0x81000000 config.bin && cp.b 0x9f050040 0x81000040 0xffc0 && cp.b 0x81000000 0x81001002 0x06 && erase 0x9f050000 +0xffff && cp.b 0x81000000 0x9f050000 0xffff"
+#define COMMAND_LC "tftp 0x80100000 config.bin && cp.b "TO_STR(GL_ART_ADDR)" 0x81000000 0xffff && cp.b 0x80100000 0x81000000 0x40 && cp.b 0x80100000 0x81001002 0x06 && erase "TO_STR(GL_ART_ADDR)\
+" +0xffff && cp.b 0x81000000 "TO_STR(GL_ART_ADDR)" 0xffff"
 
 #define VAR_UBOOT_ADDR  0x9f000000
 #define VAR_UBOOT_SIZE  0x00050000
@@ -554,4 +560,4 @@
 
 #include <cmd_confdefs.h>
 
-#endif	/* __BOARD_955X_H */
+#endif	/* __BOARD_953X_H */

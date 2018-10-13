@@ -2045,6 +2045,14 @@ ifdef EXT_ADDR_SUPPORT
 	@echo '#define ENABLE_EXT_ADDR_SUPPORT	$(EXT_ADDR_SUPPORT)'	>>include/config.h
 endif
 
+ifdef BOOT_ADDR
+	@echo '#define GL_BOOT_ADDR	$(BOOT_ADDR)'	>>include/config.h
+endif
+
+ifdef ART_ADDR
+	@echo '#define GL_ART_ADDR	$(ART_ADDR)'	>>include/config.h
+endif
+
 ifdef pll
 	@echo '#define CFG_PLL_FREQ		$(pll)'	>>include/config.h
 else
@@ -3291,6 +3299,14 @@ board956x_config: unconfig
 	@echo '#define CONFIG_BOARD_NAME "$(CFG_BOARD_TYPE)"' >>include/config.h
 ifdef EXT_ADDR_SUPPORT
 	@echo '#define ENABLE_EXT_ADDR_SUPPORT	$(EXT_ADDR_SUPPORT)'	>>include/config.h
+endif
+
+ifdef BOOT_ADDR
+	@echo '#define GL_BOOT_ADDR	$(BOOT_ADDR)'	>>include/config.h
+endif
+
+ifdef ART_ADDR
+	@echo '#define GL_ART_ADDR	$(ART_ADDR)'	>>include/config.h
 endif
 
 ifdef pll

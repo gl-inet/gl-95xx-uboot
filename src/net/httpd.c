@@ -9,6 +9,7 @@
 #include <net.h>
 #include <asm/byteorder.h>
 #include "httpd.h"
+#include <config.h>
 
 #include "../httpd/uipopt.h"
 #include "../httpd/uip.h"
@@ -45,7 +46,7 @@ void HttpdStart(void){
 }
 
 int do_http_upgrade(const ulong size, const int upgrade_type){
-	char buf[96];	// erase 0xXXXXXXXX +0xXXXXXXXX; cp.b 0xXXXXXXXX 0xXXXXXXXX 0xXXXXXXXX (68 signs)
+	char buf[200];	// erase 0xXXXXXXXX +0xXXXXXXXX; cp.b 0xXXXXXXXX 0xXXXXXXXX 0xXXXXXXXX (68 signs)
 #if !defined(WEBFAILSAFE_UPLOAD_ART_ADDRESS)
 	flash_info_t *info = &flash_info[0];
 #endif
@@ -71,6 +72,15 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 				size,
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
+				size);
+#elif CONFIG_AR300M
+	} else if(upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE){
+
+		printf("\n\n****************************\n*    FIRMWARE UPGRADING    *\n* DO NOT POWER OFF DEVICE! *\n****************************\n\n");
+		sprintf(buf,
+				"nand erase 0 0x%lX; nand write 0x%lX 0 0x%lX",
+				size,
+				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				size);
 #else
 	} else if(upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE){

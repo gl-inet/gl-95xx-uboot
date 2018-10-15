@@ -86,7 +86,7 @@ static int      retry_time = -1; /* -1 so can call readline before main_loop */
 int do_mdm_init = 0;
 extern void mdm_init(void); /* defined in board.c */
 #endif
-char nand_boot_failed = 1;
+char nand_boot_failed = 0;
 char tftp_file = 1;
 /***************************************************************************
  * Watch for 'delay' seconds for autoboot stop or autoboot delay string.
@@ -383,7 +383,7 @@ void main_loop (void)
 	trab_vfd (bmp);
 #endif	/* CONFIG_VFD && VFD_TEST_LOGO */
 
-/*#ifdef CONFIG_BOOTCOUNT_LIMIT
+#ifdef CONFIG_BOOTCOUNT_LIMIT
 	bootcount = bootcount_load();
 	bootcount++;
 	bootcount_store (bootcount);
@@ -391,7 +391,7 @@ void main_loop (void)
 	setenv ("bootcount", bcs_set);
 	bcs = getenv ("bootlimit");
 	bootlimit = bcs ? simple_strtoul (bcs, NULL, 10) : 0;
-#endif // CONFIG_BOOTCOUNT_LIMIT */
+#endif // CONFIG_BOOTCOUNT_LIMIT 
 
 #ifdef CONFIG_MODEM_SUPPORT
 	debug ("DEBUG: main_loop:   do_mdm_init=%d\n", do_mdm_init);
@@ -504,6 +504,7 @@ void main_loop (void)
 	if (bootlimit && (bootcount > bootlimit)) {
 		printf ("Warning: Bootlimit (%u) exceeded. Using altbootcmd.\n",
 		        (unsigned)bootlimit);
+		nand_boot_failed = 1;		
 		s = getenv ("altbootcmd");
 	}
 	else

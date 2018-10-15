@@ -108,6 +108,9 @@ uchar default_environment[] = {
 #ifdef VAR_UBOOT_NAME
 	"uboot_name="	VAR_UBOOT_NAME 		"\0"
 #endif
+#ifdef CONFIG_BOOTCOUNT_LIMIT
+	"bootlimit=3\0"
+#endif
 
 
 /*****************gl environment end************/

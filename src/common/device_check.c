@@ -10,6 +10,7 @@
 #endif
 
 #include <post.h>
+#include <nand.h>
 
 /* for isdigit() */
 #include <linux/ctype.h>
@@ -35,6 +36,23 @@ int check_nand()
 	argv[1] = "bad";
 	return !do_nand(NULL,0,argc,argv);
 }
+
+int check_nand_data()
+{
+	u_char buf[20]={0};
+	ulong addr=0, off=0, size=20;
+	int i=0;
+	
+	nand_info_t *nand=NULL;
+	nand = &nand_info[0];
+	nand_read(nand,off,&size,buf);
+	for(i=0;i<20;i++){
+		if(buf[i] != 0XFF)
+			return 1;
+	}
+	
+	return 0;
+}
 #endif
 
 int check_tftp_file()
@@ -47,17 +65,20 @@ int check_tftp_file()
 int select_boot_dev(){
 	char *dev=NULL;
 	unsigned int val=0;
+	char boot_cmd[30]={0};
 		
 	dev = getenv("boot_dev");
 	if(strcmp(dev,"on") == 0)
 	{
 		val = switch_boot_load();
-		//printf("val is %d\n",val);
+		printf("val is %d\n",val);
 		switch(val)//from nand boot
 		{
-		//case 2: run_command("nboot 0x81000000 0",0);break;
-		case 2: run_command("bootm 0x9f060000",0);break;//force boot to 0x9f060000
-		case 1: run_command("bootm 0x9f060000",0);break;
+		case 2: run_command("nboot 0x81000000 0",0);
+				break;
+		case 1: sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);
+				run_command(boot_cmd,0);
+				break;
 		default: break;
 		}		
 	}
@@ -88,6 +109,7 @@ int calibration_status(void){
 	int has_config=0;
 	int has_test=0;
 	int has_nand=0;
+	int nand_data=0;
 	//volatile unsigned long *art_cal=(volatile unsigned long *)0x9f3f1000;
 	volatile unsigned short *art_final=(volatile unsigned short *)(GL_ART_ADDR + 0X1000);
 	volatile unsigned int *config_data=(volatile unsigned int *)(GL_ART_ADDR + 0X10);
@@ -116,7 +138,9 @@ int calibration_status(void){
 	if(*art_final==0x0202){
 		has_art_final=1;
 	}
-
+#ifndef CONFIG_AR300M //only 300m check bootcount
+	nand_boot_failed = 0;
+#endif
 	if(has_art_final){
 		DEBUG("Found ART,Checking calibration status...\n");
 		if(calibrated){
@@ -132,8 +156,14 @@ int calibration_status(void){
 								return 0;
 								}
 							else{
-								DEBUG("Device have nor and nand flash,Booting standard firmware from nand flash...\n");
-								return 1;
+									if( check_nand_data() ){
+										DEBUG("Device have nor and nand flash,Booting standard firmware from nand flash...\n");
+										return 1;
+									}
+									else{
+										DEBUG("Device have nor and nand flash,Nand no data,Booting standard firmware from nor flash...\n");
+										return 0;
+									}
 								} 
 							}
 						else{

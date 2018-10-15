@@ -1459,6 +1459,13 @@ static struct ath_spi_nand_priv ath_spi_nand_ids[] = {
 		(128 << 20),			/* 1G bit */
 		128,				/* oob size */
 	},
+		{ /* FN */
+		0xa1,				/* manufacturer code */
+		{ 0xe1, 0x00, 0x00, 0x00 },	/* Device id */
+		0x02,				/* ecc error code */
+		(128 << 20),			/* 1G bit */
+		128,				/* oob size */
+	},	
 	/* add new manufacturer here */
 };
 
@@ -1504,6 +1511,7 @@ done:
 		priv->page_read_to_cache = ath_spi_nand_cmd_page_read_to_cache_common;
 		priv->program_execute = ath_spi_nand_cmd_program_execute_common;
 		break;
+	case 0xa1:
 	case 0xd5:
 	case 0xc8:
 		if (priv->did[0] == 0xf1) {

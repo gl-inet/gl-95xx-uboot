@@ -334,6 +334,16 @@ ath_uart_freq(void)
 		return 25 * 1000 * 1000;
 	//}
 }
+#include "ar7240_soc.h"
+
+
+static int ath_init_gpio()
+{
+       unsigned int old  = ath_reg_rd(AR7240_GPIO_OE);
+       old  &= ~(1<<1);
+       ath_reg_wr(AR7240_GPIO_OE,old);
+       ath_reg_wr_nf(AR7240_GPIO_CLEAR, 1<<1);
+}
 
 void ath_sys_frequency()
 {
@@ -383,6 +393,7 @@ void ath_sys_frequency()
 			(CPU_DDR_CLOCK_CONTROL_AHB_POST_DIV_GET(clk_ctrl) + 1);
 	}
 #endif
+	ath_init_gpio();
 done:
         prmsg("cpu %u ddr %u ahb %u\n",
                 ath_cpu_freq / 1000000,

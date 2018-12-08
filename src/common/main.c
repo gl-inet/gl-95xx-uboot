@@ -502,10 +502,11 @@ void main_loop (void)
 
 #ifdef CONFIG_BOOTCOUNT_LIMIT
 	if (bootlimit && (bootcount > bootlimit)) {
-		printf ("Warning: Bootlimit (%u) exceeded. Using altbootcmd.\n",
+		printf ("Warning: Bootlimit (%u) exceeded. bootm nor flash.\n",
 		        (unsigned)bootlimit);
 		nand_boot_failed = 1;		
-		s = getenv ("altbootcmd");
+		sprintf(s,"bootm 0x%x",GL_BOOT_ADDR);
+		setenv("bootcmd",s);
 	}
 	else
 #endif /* CONFIG_BOOTCOUNT_LIMIT */
@@ -547,6 +548,9 @@ void main_loop (void)
                         case 4:
                         case 5:
                         case 3:
+#ifdef CONFIG_BOOTCOUNT_LIMIT
+							   bootcount_store(4);  //必须标准固件升级成功且成功启动后，才能跳转nand固件							   
+#endif
                                printf("Booting image at: 0x%X\n",GL_BOOT_ADDR);
 							   sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);
                                run_command(boot_cmd,0);

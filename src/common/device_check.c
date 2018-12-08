@@ -139,7 +139,7 @@ int calibration_status(void){
 		has_art_final=1;
 	}
 #ifndef CONFIG_AR300M //only 300m check bootcount
-	nand_boot_failed = 0;
+	nand_boot_failed = 1;
 #endif
 	if(has_art_final){
 		DEBUG("Found ART,Checking calibration status...\n");

@@ -149,8 +149,13 @@
 
 #define COMMAND_LU "if ping $serverip; then tftp $loadaddr $uboot_name && erase $uboot_addr +$uboot_size && cp.b $fileaddr $uboot_addr $filesize && echo OK!; else echo ERROR! Server not reachable!; fi"
 
+#ifdef CONFIG_X750_4G
+#define COMMAND_LC "tftp 0x80100000 config.bin && cp.b "TO_STR(GL_ART_ADDR)" 0x81000000 0xffff && cp.b 0x80100000 0x81000000 0x40 && cp.b 0x80100000 0x81001002 0x06 \
+&& wmac 0x80100000 0x81001002 2 && wmac 0x80100000 0x81005006 3 && erase "TO_STR(GL_ART_ADDR)" +0xffff && cp.b 0x81000000 "TO_STR(GL_ART_ADDR)" 0xffff"
+#else
 #define COMMAND_LC "tftp 0x80100000 config.bin && cp.b "TO_STR(GL_ART_ADDR)" 0x81000000 0xffff && cp.b 0x80100000 0x81000000 0x40 && cp.b 0x80100000 0x81001002 0x06 && erase "TO_STR(GL_ART_ADDR)\
 " +0xffff && cp.b 0x81000000 "TO_STR(GL_ART_ADDR)" 0xffff"
+#endif
 
 #define VAR_UBOOT_ADDR  0x9f000000
 #define VAR_UBOOT_SIZE  0x00050000

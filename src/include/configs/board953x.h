@@ -138,9 +138,11 @@
 /*
  *define gl environment
 */
-
+#ifndef CONFIG_AR300M
 #define COMMAND_LF "if ping $serverip; then tftp $loadaddr $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi" 
-
+#else
+#define COMMAND_LF "if ping 192.168.1.2; then tftp 0x80060000 $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize; if nand bad; then run dlf; fi; else echo ping 192.168.1.2 failed; fi"
+#endif
 #define VAR_FIRMWARE_ADDR GL_BOOT_ADDR
 #define VAR_FIRMWARE_NAME "openwrt-gl-"CONFIG_BOARD_NAME".bin"
 
@@ -148,6 +150,10 @@
 
 #define COMMAND_LC "tftp 0x80100000 config.bin && cp.b "TO_STR(GL_ART_ADDR)" 0x81000000 0xffff && cp.b 0x80100000 0x81000000 0x40 && cp.b 0x80100000 0x81001002 0x06 && erase "TO_STR(GL_ART_ADDR)\
 " +0xffff && cp.b 0x81000000 "TO_STR(GL_ART_ADDR)" 0xffff"
+
+#define COMMAND_RLF "if ping $serverip; then tftp $loadaddr $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi"
+#define COMMAND_DLF "if ping 192.168.1.2; then echo ok; elif ping 192.168.1.2; then echo ok; elif ping 192.168.1.2; then echo ok; elif echo ping 192.168.1.2; then echo ok; elif echo ping 192.168.1.2; then \
+echo ok; else echo ping finally failed; fi; tftp 0x81000000 openwrt-gl-ar300m.img && nand erase && nand write $fileaddr 0 $filesize"
 
 #define VAR_UBOOT_ADDR  0x9f000000
 #define VAR_UBOOT_SIZE  0x00050000

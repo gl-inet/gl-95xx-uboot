@@ -75,6 +75,9 @@ uchar default_environment[] = {
 #ifdef COMMAND_RLF
 	"rlf="	COMMAND_RLF 		"\0"
 #endif
+#ifdef COMMAND_DLF
+	"dlf="	COMMAND_DLF 		"\0"
+#endif
 #ifdef VAR_KERNEL_SIZE
 	"kernelsize="	MK_STR(VAR_KERNEL_SIZE)		"\0"
 #endif

@@ -339,10 +339,12 @@ ath_uart_freq(void)
 
 static int ath_init_gpio()
 {
+#ifdef CONFIG_X750_4G
        unsigned int old  = ath_reg_rd(AR7240_GPIO_OE);
        old  &= ~(1<<1);
        ath_reg_wr(AR7240_GPIO_OE,old);
        ath_reg_wr_nf(AR7240_GPIO_CLEAR, 1<<1);
+#endif
 }
 
 void ath_sys_frequency()

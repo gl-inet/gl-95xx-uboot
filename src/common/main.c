@@ -256,7 +256,7 @@ static __inline__ int abortboot(int bootdelay)
 	}
 #endif
 	char tmp_flag=0,tmp_key=0;
-	while ((bootdelay > 0) && (!abort)) {
+	while ((bootdelay >= 0) && (!abort)) {
 		int i;
 
 		/* delay 100 * 10ms */

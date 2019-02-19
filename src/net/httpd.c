@@ -57,7 +57,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		sprintf(buf,
 				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX",
 				WEBFAILSAFE_UPLOAD_UBOOT_ADDRESS,
-				WEBFAILSAFE_ERASE_UBOOT_SIZE_IN_BYTES,
+				0x50000,
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_UBOOT_ADDRESS,
 				WEBFAILSAFE_UPLOAD_UBOOT_SIZE_IN_BYTES);

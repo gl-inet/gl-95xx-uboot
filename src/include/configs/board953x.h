@@ -21,7 +21,10 @@
 
 #define CFG_CONSOLE_INFO_QUIET
 #define CONFIG_DELAY_TO_AUTORUN_HTTPD 5
-#define CONFIG_BOOTCOUNT_LIMIT
+
+#ifdef CONFIG_AR300M
+	#define CONFIG_BOOTCOUNT_LIMIT
+#endif
 
 /*
  * Web Failsafe configuration
@@ -141,15 +144,19 @@
 #ifndef CONFIG_AR300M
 #define COMMAND_LF "if ping $serverip; then tftp $loadaddr $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi" 
 #else
-#define COMMAND_LF "if ping 192.168.1.2; then tftp 0x80060000 $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize; if nand bad; then run dlf; fi; else echo ping 192.168.1.2 failed; fi"
+#define COMMAND_LF "if ping $serverip; then tftp 0x80060000 $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize; if nand bad; then run dlf; fi; else echo ping $serverip failed; fi"
 #endif
-#define VAR_FIRMWARE_ADDR GL_BOOT_ADDR
 #define VAR_FIRMWARE_NAME "openwrt-gl-"CONFIG_BOARD_NAME".bin"
 
-#define COMMAND_LU "if ping $serverip; then tftp $loadaddr $uboot_name && erase $uboot_addr +$uboot_size && cp.b $fileaddr $uboot_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi"
+#define COMMAND_LU "if ping $serverip; then tftp $loadaddr $uboot_name && erase $uboot_addr +$uboot_size && cp.b $fileaddr $uboot_addr $filesize && echo OK!; else echo ERROR! Server not reachable!; fi"
 
+#ifdef CONFIG_X750_4G
+#define COMMAND_LC "tftp 0x80100000 config.bin && cp.b "TO_STR(GL_ART_ADDR)" 0x81000000 0xffff && cp.b 0x80100000 0x81000000 0x40 && cp.b 0x80100000 0x81001002 0x06 \
+&& wmac 0x80100000 0x81001002 2 && wmac 0x80100000 0x81005006 3 && erase "TO_STR(GL_ART_ADDR)" +0xffff && cp.b 0x81000000 "TO_STR(GL_ART_ADDR)" 0xffff"
+#else
 #define COMMAND_LC "tftp 0x80100000 config.bin && cp.b "TO_STR(GL_ART_ADDR)" 0x81000000 0xffff && cp.b 0x80100000 0x81000000 0x40 && cp.b 0x80100000 0x81001002 0x06 && erase "TO_STR(GL_ART_ADDR)\
 " +0xffff && cp.b 0x81000000 "TO_STR(GL_ART_ADDR)" 0xffff"
+#endif
 
 #define COMMAND_RLF "if ping $serverip; then tftp $loadaddr $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi"
 #define COMMAND_DLF "if ping 192.168.1.2; then echo ok; elif ping 192.168.1.2; then echo ok; elif ping 192.168.1.2; then echo ok; elif echo ping 192.168.1.2; then echo ok; elif echo ping 192.168.1.2; then \

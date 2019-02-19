@@ -147,9 +147,34 @@ long int initdram(int board_type)
 	return (ath_mem_config());
 }
 
+#if defined(GPIO_BLE_RESET)
+#define AR7240_GPIO_FUNCTION 0x1804006C
+void disable_jtag()
+{
+	unsigned int tmp=0;
+	tmp = ath_reg_rd(AR7240_GPIO_FUNCTION);
+	ath_reg_wr_nf(AR7240_GPIO_FUNCTION, (tmp | 0x0002));
+}
+
+void ble_reset(void)
+{
+	unsigned int GPIO_BLE_OE  = ath_reg_rd(AR7240_GPIO_OE);
+	disable_jtag();
+	if(GPIO_BLE_OE & (1<<GPIO_BLE_RESET))
+	{
+		GPIO_BLE_OE  &= ~(1<<GPIO_BLE_RESET);
+		ath_reg_wr(AR7240_GPIO_OE,GPIO_BLE_OE);
+	}
+	ath_reg_wr_nf(AR7240_GPIO_CLEAR, 1<<GPIO_BLE_RESET);
+}
+#endif
+
 int	checkboard(args)
 {
 	board_str(CONFIG_BOARD_NAME);
+#if defined(GPIO_BLE_RESET)
+	 ble_reset(); //GL -- close BLE
+#endif
 	return 0;
 }
 

@@ -83,6 +83,7 @@ COBJS	+= device_check.o
 
 #add led command
 COBJS	+= cmd_led.o
+COBJS	+= cmd_wmac.o
 
 OBJS   += cmd_net.o
 

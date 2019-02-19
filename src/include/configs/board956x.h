@@ -146,15 +146,15 @@
  *define gl environment
 */
 
-#define COMMAND_LF "if ping $serverip; then tftp $loadaddr $firmware_nand_name && erase $firmware_addr +$kernelsize && nand erase && cp.b $fileaddr $firmware_addr $kernelsize && nand write $rootfs_addr 0 $rootfs_size && echo OK!; else ERROR! Server not reachable!; fi"
+#define COMMAND_LF "if ping $serverip; then tftp $loadaddr $firmware_nand_name && erase $firmware_addr +$kernelsize && nand erase && cp.b $fileaddr $firmware_addr $kernelsize && nand write $rootfs_addr 0 $rootfs_size && echo OK!; else echo ERROR! Server not reachable!; fi"
 
-#define COMMAND_RLF "if ping $serverip; then tftp $loadaddr $firmware_nor_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi" 
+#define COMMAND_RLF "if ping $serverip; then tftp $loadaddr $firmware_nor_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else echo ERROR! Server not reachable!; fi" 
 
 #define VAR_FIRMWARE_ADDR GL_BOOT_ADDR
 #define VAR_FIRMWARE_NOR_NAME  "openwrt-gl-"CONFIG_BOARD_NAME".bin"
 #define VAR_FIRMWARE_NAND_NAME "openwrt-gl-"CONFIG_BOARD_NAME".img"
 
-#define COMMAND_LU "if ping $serverip; then tftp $loadaddr $uboot_name && erase $uboot_addr +$uboot_size && cp.b $fileaddr $uboot_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi"
+#define COMMAND_LU "if ping $serverip; then tftp $loadaddr $uboot_name && erase $uboot_addr +$uboot_size && cp.b $fileaddr $uboot_addr $filesize && echo OK!; else echo ERROR! Server not reachable!; fi"
 
 #define COMMAND_LC "tftp 0x80100000 config.bin && cp.b "TO_STR(GL_ART_ADDR)" 0x81000000 0xffff && cp.b 0x80100000 0x81000000 0x40 && cp.b 0x80100000 0x81001002 0x06 && erase "TO_STR(GL_ART_ADDR)\
 " +0xffff && cp.b 0x81000000 "TO_STR(GL_ART_ADDR)" 0xffff"

@@ -165,6 +165,7 @@ echo ok; else echo ping finally failed; fi; tftp 0x81000000 openwrt-gl-ar300m.im
 #define VAR_UBOOT_ADDR  0x9f000000
 #define VAR_UBOOT_SIZE  0x00050000
 #define VAR_UBOOT_NAME  "uboot-gl-"CONFIG_BOARD_NAME".bin"
+#define VAR_FIRMWARE_ADDR GL_BOOT_ADDR
 
 /*****************gl environment end************/
 /*-----------------------------------------------------------------------

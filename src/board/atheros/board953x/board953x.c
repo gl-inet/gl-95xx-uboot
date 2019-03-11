@@ -94,6 +94,7 @@ ath_usb_initial_config(void)
 	udelay(10);
 }
 
+#ifndef CONFIG_FOR_GL_BOARD
 void ath_gpio_config(void)
 {
 	/* disable the CLK_OBS on GPIO_4 and set GPIO4 as input */
@@ -107,6 +108,12 @@ void ath_gpio_config(void)
 	ath_reg_rmw_set(GPIO_OE_ADDRESS, (1 << 15));
 	ath_reg_rmw_set(GPIO_OE_ADDRESS, (1 << 12));
 }
+#else
+void ath_gpio_config(void)
+{
+}
+#endif
+
 void all_led_off();
 void status_led_on();
 int

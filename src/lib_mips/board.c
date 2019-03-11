@@ -119,7 +119,8 @@ static int init_func_ram (void)
 static int display_banner(void)
 {
 
-	printf ("\n\n%s\n\n", version_string);
+	//printf ("\n\n%s\n\n", version_string);
+	printf ("\n\n%s (%s)\n\n",U_BOOT_VERSION,__TIMESTAMP__);
 
 	return (0);
 }

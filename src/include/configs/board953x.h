@@ -159,8 +159,14 @@
 #endif
 
 #define COMMAND_RLF "if ping $serverip; then tftp $loadaddr $firmware_name && erase $firmware_addr +$filesize && cp.b $fileaddr $firmware_addr $filesize && echo OK!; else ERROR! Server not reachable!; fi"
+
+#ifdef CONFIG_AR300M
 #define COMMAND_DLF "if ping 192.168.1.2; then echo ok; elif ping 192.168.1.2; then echo ok; elif ping 192.168.1.2; then echo ok; elif echo ping 192.168.1.2; then echo ok; elif echo ping 192.168.1.2; then \
-echo ok; else echo ping finally failed; fi; tftp 0x81000000 openwrt-gl-ar300m.img && nand erase && nand write $fileaddr 0 $filesize"
+echo ok; else echo ping finally failed; fi; tftp 0x81000000 openwrt-gl-"CONFIG_BOARD_NAME".img && nand erase && nand write $fileaddr 0 $filesize"
+#else
+#define COMMAND_DLF "if ping 192.168.1.2; then echo ok; elif ping 192.168.1.2; then echo ok; elif ping 192.168.1.2; then echo ok; elif echo ping 192.168.1.2; then echo ok; elif echo ping 192.168.1.2; then \
+echo ok; else echo ping finally failed; fi; tftp 0x81000000 openwrt-gl-"CONFIG_BOARD_NAME".img && erase $firmware_addr +0x200000 && cp.b $fileaddr $firmware_addr 0x200000 && nand erase && nand write 0x81200000 0 $filesize"	
+#endif
 
 #define VAR_UBOOT_ADDR  0x9f000000
 #define VAR_UBOOT_SIZE  0x00050000

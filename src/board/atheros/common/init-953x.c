@@ -347,7 +347,7 @@ static int ath_init_gpio()
 #elif  CONFIG_MIFI_V3
 	unsigned int gpio_fun1  = ath_reg_rd(AR7240_GPIO_BASE+0x30);
 	unsigned int gpio_oe = ath_reg_rd(AR7240_GPIO_OE);
-	ath_reg_wr_nf(AR7240_GPIO_BASE+0x2c,0);//GPIO0-GPIO3 seting to GPIO functionality
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0x2c,0X160000);//GPIO0-GPIO3 seting to GPIO functionality
 	gpio_fun1 &= ~0xff;//GPIO4
 	ath_reg_wr_nf(AR7240_GPIO_BASE+0x30,gpio_fun1);//GPIO4 seting to GPIO functionality
 	ath_reg_wr_nf(AR7240_GPIO_BASE+0x38,0);//GPIO12-GPIO15 seting to GPIO functionality

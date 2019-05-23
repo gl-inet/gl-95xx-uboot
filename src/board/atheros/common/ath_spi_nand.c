@@ -1419,7 +1419,7 @@ static struct ath_spi_nand_priv ath_spi_nand_ids[] = {
 	},
 	{ /* Giga Device version 2 - GD5F1GQ4XC */
 		0xc8,				/* manufacturer code */
-		{ 0xa1, 0xb1, 0x00, 0x00 },	/* Device id */
+		{ 0xa1, 0xb1, 0xd1, 0x00 },	/* Device id */
 		0x07,				/* ecc error code */
 		(128 << 20),			/* 1G bit */
 		128,				/* oob size */

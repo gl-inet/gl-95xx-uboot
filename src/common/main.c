@@ -466,6 +466,7 @@ void main_loop (void)
 
                         // how long the button is pressed?
                         printf("\b\b\b%2d ", counter);
+						mifi_v3_send_msg("{ \"button\": \"%d\" }",counter);
 
                         //turn on Red LED to show httpd started
                         if(counter==CONFIG_DELAY_TO_AUTORUN_HTTPD){
@@ -484,7 +485,8 @@ void main_loop (void)
                         // run web failsafe mode
                         if(counter >= CONFIG_DELAY_TO_AUTORUN_HTTPD){
                                 printf("\n\nButton was pressed for %d sec...\nHTTP server is starting for firmware update...\n\n", counter); 
-                                NetLoopHttpd();
+								mifi_v3_send_msg("{ \"system\": \"gouboot\" }");
+								NetLoopHttpd();
                                 bootdelay = -1;
                         } else {
                                 printf("\n\n## Error: button wasn't pressed long enough!\nContinuing normal boot...\n\n");

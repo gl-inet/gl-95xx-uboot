@@ -621,4 +621,11 @@ void	show_boot_progress (int status);
 #error Read section CONFIG_SKIP_LOWLEVEL_INIT in README.
 #endif
 
+#ifdef  CONFIG_MIFI_V3
+#define mifi_v3_send_msg printf
+#else
+#define mifi_v3_send_msg(a,...) asm volatile ("nop;\n\t"::)
+#endif
+
+
 #endif	/* __COMMON_H_ */

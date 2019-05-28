@@ -135,6 +135,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 	}
 
 	printf("Executing: %s\n\n", buf);
+	mifi_v3_send_msg("{ \"system\": \"updating\" }");
 	return(run_command(buf, 0));
 
 	//return(-1);

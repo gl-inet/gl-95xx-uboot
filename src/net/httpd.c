@@ -78,8 +78,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 
 		printf("\n\n****************************\n*    FIRMWARE UPGRADING    *\n* DO NOT POWER OFF DEVICE! *\n****************************\n\n");
 		sprintf(buf,
-				"nand erase 0 0x%lX; nand write 0x%lX 0 0x%lX",
-				size,
+				"nand erase; nand write 0x%lX 0 0x%lX",
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				size);
 #else

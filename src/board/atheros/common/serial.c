@@ -157,7 +157,6 @@ int serial_init(void)
 #else
 	ath_reg_rmw_set(GPIO_OUT_FUNCTION2_ADDRESS,
 			GPIO_OUT_FUNCTION2_ENABLE_GPIO_10_SET(0x16));
-
 #endif
 	ath_reg_rmw_clear(GPIO_IN_ENABLE0_ADDRESS,
 			GPIO_IN_ENABLE0_UART_SIN_SET(0xff));

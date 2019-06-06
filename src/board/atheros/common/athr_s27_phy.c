@@ -442,9 +442,9 @@ athrs27_phy_setup(int ethUnit)
      * it can respond properly.
      */
     if (ethUnit == ENET_UNIT_LAN)
-        sysMsDelay(1000);
+        sysMsDelay(100);
     else
-        sysMsDelay(3000);
+        sysMsDelay(300);
 
     /*
      * Wait up to 3 seconds for ALL associated PHYs to finish

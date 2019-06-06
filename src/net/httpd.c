@@ -78,8 +78,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 
 		printf("\n\n****************************\n*    FIRMWARE UPGRADING    *\n* DO NOT POWER OFF DEVICE! *\n****************************\n\n");
 		sprintf(buf,
-				"nand erase 0 0x%lX; nand write 0x%lX 0 0x%lX",
-				size,
+				"nand erase; nand write 0x%lX 0 0x%lX",
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				size);
 #else
@@ -87,13 +86,12 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 
 		printf("\n\n****************************\n*    FIRMWARE UPGRADING    *\n* DO NOT POWER OFF DEVICE! *\n****************************\n\n");
 		sprintf(buf,
-				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX; nand erase 0 0x%lX; nand write 0x%lX 0 0x%lX",
+				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX; nand erase; nand write 0x%lX 0 0x%lX",
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
 				WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE,
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
 				WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE,
-				size-WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE,
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS+WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE,
 				size-WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE);
 #endif
@@ -135,6 +133,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 	}
 
 	printf("Executing: %s\n\n", buf);
+	mifi_v3_send_msg("{ \"system\": \"updating\" }");
 	return(run_command(buf, 0));
 
 	//return(-1);

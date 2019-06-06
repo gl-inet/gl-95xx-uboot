@@ -342,6 +342,9 @@ void bootcount_store(ulong count)
         sprintf(buf, "%ld", count);
         setenv("bootcount", buf);
         saveenv();
+        run_command("protect off all",0);
+        green_led_off();
+        red_led_off();
 }
 
 extern int reset_button_status(void);
@@ -382,16 +385,6 @@ void main_loop (void)
 #endif
 	trab_vfd (bmp);
 #endif	/* CONFIG_VFD && VFD_TEST_LOGO */
-
-#ifdef CONFIG_BOOTCOUNT_LIMIT
-	bootcount = bootcount_load();
-	bootcount++;
-	bootcount_store (bootcount);
-	sprintf (bcs_set, "%lu", bootcount);
-	setenv ("bootcount", bcs_set);
-	bcs = getenv ("bootlimit");
-	bootlimit = bcs ? simple_strtoul (bcs, NULL, 10) : 0;
-#endif // CONFIG_BOOTCOUNT_LIMIT 
 
 #ifdef CONFIG_MODEM_SUPPORT
 	debug ("DEBUG: main_loop:   do_mdm_init=%d\n", do_mdm_init);
@@ -500,18 +493,7 @@ void main_loop (void)
 	init_cmd_timeout ();
 # endif	/* CONFIG_BOOT_RETRY_TIME */
 
-#ifdef CONFIG_BOOTCOUNT_LIMIT
-	if (bootlimit && (bootcount > bootlimit)) {
-		printf ("Warning: Bootlimit (%u) exceeded. bootm nor flash.\n",
-		        (unsigned)bootlimit);
-		nand_boot_failed = 1;	
-		char s_cmd[30]={0};	
-		sprintf(s_cmd,"bootm 0x%x",GL_BOOT_ADDR);
-		setenv("bootcmd",s_cmd);
-	}
-	else
-#endif /* CONFIG_BOOTCOUNT_LIMIT */
-		s = getenv ("bootcmd");
+	s = getenv ("bootcmd");
        if (!s) {
 #ifdef CONFIG_ROOTFS_FLASH
            /* XXX if rootfs is in flash, expect uImage to be in flash */
@@ -533,6 +515,26 @@ void main_loop (void)
 //	debug ("### main_loop: bootcmd=\"%s\"\n", s ? s : "<UNDEFINED>");
 
 	if (bootdelay >= 0 && s && !abortboot (bootdelay)) {
+
+#ifdef CONFIG_BOOTCOUNT_LIMIT
+	bootcount = bootcount_load();
+	bootcount++;
+	bootcount_store (bootcount);
+	sprintf (bcs_set, "%lu", bootcount);
+	setenv ("bootcount", bcs_set);
+	bcs = getenv ("bootlimit");
+	bootlimit = bcs ? simple_strtoul (bcs, NULL, 10) : 0;
+
+	if (bootlimit && (bootcount > bootlimit)) {
+		printf ("Warning: Bootlimit (%u) exceeded. bootm nor flash.\n",
+		        (unsigned)bootlimit);
+		nand_boot_failed = 1;
+		char s_cmd[30]={0};
+		sprintf(s_cmd,"bootm 0x%x",GL_BOOT_ADDR);
+		setenv("bootcmd",s_cmd);
+	}
+#endif // CONFIG_BOOTCOUNT_LIMIT
+
 # ifdef CONFIG_AUTOBOOT_KEYED
 		int prev = disable_ctrlc(1);	/* disable Control C checking */
 # endif
@@ -566,6 +568,13 @@ void main_loop (void)
 			sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);
             run_command(boot_cmd,0);
 		}
+# ifdef CONFIG_AR300M
+		else {
+			sprintf(boot_cmd,"nboot 0x81000000 0");
+			run_command(boot_cmd,0);
+		}
+# endif
+
 # ifndef CFG_HUSH_PARSER
 		run_command (s, 0);
 # else

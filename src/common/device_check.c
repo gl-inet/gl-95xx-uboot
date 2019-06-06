@@ -70,16 +70,21 @@ int select_boot_dev(){
 	dev = getenv("boot_dev");
 	if(strcmp(dev,"on") == 0)
 	{
+
 		val = switch_boot_load();
 		printf("val is %d\n",val);
 		switch(val)//from nand boot
 		{
-		case 2: run_command("nboot 0x81000000 0",0);
-				break;
-		case 1: sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);
+		case 0:
+				sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);
 				run_command(boot_cmd,0);
 				break;
-		default: break;
+		case 1:
+		case 2:
+				run_command("nboot 0x81000000 0",0);
+				break;
+		default:
+				break;
 		}		
 	}
 }
@@ -168,6 +173,7 @@ int calibration_status(void){
 							}
 						else{
 							DEBUG("Device only have nor flash,Booting standard firmware from nor flash...\n");
+							nand_boot_failed = 1;
 							return 2;
 							}											
 					}else{

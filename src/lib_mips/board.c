@@ -120,7 +120,8 @@ static int display_banner(void)
 {
 
 	//printf ("\n\n%s\n\n", version_string);
-	printf ("\n\n%s (%s)\n\n",U_BOOT_VERSION,__TIMESTAMP__);
+	//printf ("\n\n%s (%s)\n\n",U_BOOT_VERSION,__TIMESTAMP__);
+	printf ("\n\n%s (%s)\n\n",U_BOOT_VERSION,"Fri May 17 09:44:06 2019");
 
 	return (0);
 }

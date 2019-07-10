@@ -2113,6 +2113,9 @@ endif
 ifdef GPIO_BLE_RESET
 	@echo "#define GPIO_BLE_RESET $(GPIO_BLE_RESET)" >> include/config.h
 endif
+ifdef GPIO_HUB_RESET
+	@echo "#define GPIO_HUB_RESET $(GPIO_HUB_RESET)" >> include/config.h
+endif
 	@./mkconfig -a board953x mips mips board953x atheros
 
 ap120_config			: 	unconfig

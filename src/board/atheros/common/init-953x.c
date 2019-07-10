@@ -360,6 +360,22 @@ static int ath_init_gpio()
 #endif
 }
 
+#if defined(GPIO_HUB_RESET)
+
+void usb_hub_reset(void)
+{
+	unsigned int GPIO_HUB_OE  = ath_reg_rd(AR7240_GPIO_OE);
+	if(GPIO_HUB_OE & (1<<GPIO_HUB_RESET))
+	{
+		GPIO_HUB_OE  &= ~(1<<GPIO_HUB_RESET);
+		ath_reg_wr(AR7240_GPIO_OE,GPIO_HUB_OE);
+	}
+	ath_reg_wr_nf(AR7240_GPIO_CLEAR, 1<<GPIO_HUB_RESET);
+	udelay(10000);//10mS
+	ath_reg_wr_nf(AR7240_GPIO_SET, 1<<GPIO_HUB_RESET);
+}
+
+#endif
 void ath_sys_frequency()
 {
 #if !defined(CONFIG_ATH_EMULATION)
@@ -409,6 +425,11 @@ void ath_sys_frequency()
 	}
 #endif
 	ath_init_gpio();
+#if defined(GPIO_HUB_RESET)
+	usb_hub_reset();
+#endif
+
+
 done:
         prmsg("cpu %u ddr %u ahb %u\n",
                 ath_cpu_freq / 1000000,

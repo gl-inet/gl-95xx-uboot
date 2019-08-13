@@ -255,7 +255,7 @@ echo ok; else echo ping finally failed; fi; tftp 0x81000000 openwrt-gl-"CONFIG_B
 #endif
 
 
-#define CFG_DDR_REFRESH_VAL		0x4138
+#define CFG_DDR_REFRESH_VAL		0x40c2
 
 /*
  * The following #defines are needed to get flash environment right

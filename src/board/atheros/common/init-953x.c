@@ -69,7 +69,7 @@ ath_ram_type(uint32_t bs)
 						DDR_CONFIG_OPEN_PAGE_SET(0x1) | \
 						DDR_CONFIG_CAS_LATENCY_SET(0x1) | \
 						DDR_CONFIG_TMRD_SET(0xf) | \
-						DDR_CONFIG_TRFC_SET(0x15) | \
+						DDR_CONFIG_TRFC_SET(0x3f) | \
 						DDR_CONFIG_TRRD_SET(0x7) | \
 						DDR_CONFIG_TRP_SET(0x9) | \
 						DDR_CONFIG_TRCD_SET(0x9) | \
@@ -81,7 +81,7 @@ ath_ram_type(uint32_t bs)
 						DDR_CONFIG2_TWTR_SET(0x15) | \
 						DDR_CONFIG2_TRTP_SET(0x9) | \
 						DDR_CONFIG2_TRTW_SET(0xe) | \
-						DDR_CONFIG2_TWR_SET(0x1) | \
+						DDR_CONFIG2_TWR_SET(0x9) | \
 						DDR_CONFIG2_CKE_SET(0x1) | \
 						DDR_CONFIG2_CNTL_OE_EN_SET(0x1) | \
 						DDR_CONFIG2_BURST_LENGTH_SET(0x8)

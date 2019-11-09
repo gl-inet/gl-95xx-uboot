@@ -223,11 +223,46 @@ static __inline__ int abortboot(int bootdelay)
 #ifdef CONFIG_MENUKEY
 static int menukey = 0;
 #endif
+static ulong my_atoi(const char *c);
+extern char firmware_name[16];
+static int hex_str_to_num(char *str, int length)
+{
+    char revstr[16] = {0}; //根据十六进制字符串的长度，这里注意数组不要越界
+    int num[16] = {0};
+    int count = 1;
+    int result = 0;
+           
+    strcpy(revstr, str);
+
+    for(int i = length - 1; i >= 0; i--)
+    {
+        if((revstr[i] >= '0') && (revstr[i] <= '9')){
+            num[i] = revstr[i] - 48;   //字符0的ASCII值为48                  
+        }
+        else if((revstr[i] >= 'a') && (revstr[i] <= 'f')){
+            num[i] = revstr[i] - 'a' + 10;
+        }
+        else if((revstr[i] >= 'A') && (revstr[i] <= 'F')){
+            num[i] = revstr[i] - 'A' + 10;
+        }
+        else{
+            num[i] = 0;                 
+        }
+
+        result += num[i] * count;
+        count *= 16; //十六进制(如果是八进制就在这里乘以8)           
+    }
+
+    return result;
+}
 
 static __inline__ int abortboot(int bootdelay)
 {
 	int abort = 0;
-
+    char tftp_command[50] = "0";
+    char cp_command[50] = "0";
+    char nandw_command[50] = "0";
+    char erase_command[50] = "0";
 #ifdef CONFIG_SILENT_CONSOLE
 	if (gd->flags & GD_FLG_SILENT) {
 		/* Restore serial console */
@@ -239,6 +274,8 @@ static __inline__ int abortboot(int bootdelay)
 #ifdef CONFIG_MENUPROMPT
 	printf(CONFIG_MENUPROMPT, bootdelay);
 #else
+
+    run_command("dhcpd start", 0);
 	printf("Hit 'gl' to stop autoboot: %2d ", bootdelay);
 #endif
 
@@ -261,6 +298,45 @@ static __inline__ int abortboot(int bootdelay)
 
 		/* delay 100 * 10ms */
 		for (i=0; !abort && i<100; ++i) {
+
+            if(update_msg()){
+                abort  = 1; 
+                bootdelay = 1;
+                printf("V 1.0.0\n");
+                sprintf(tftp_command,"tftpboot 0x81000000 %s",firmware_name);
+                printf("%s\n",tftp_command);
+                run_command(tftp_command, 0);
+                printf("filesize:%d \n",hex_str_to_num(getenv("filesize"),strlen(getenv("filesize"))));
+                if(hex_str_to_num(getenv("filesize"),strlen(getenv("filesize")))<=0){
+                    printf("file err\n");
+                    break;
+                }
+                if(strstr(firmware_name,".bin")){
+                    if(327680<hex_str_to_num(getenv("filesize"),strlen(getenv("filesize")))){ 
+
+                        sprintf(erase_command,"erase %s +%s",getenv("firmware_addr"),getenv("filesize"));
+                        sprintf(cp_command,"cp.b 0x81000000  %s %s",getenv("firmware_addr"),getenv("filesize"));
+                        printf("%s\n",erase_command);
+                        printf("%s\n",cp_command);
+                    }
+                    else{
+                        sprintf(erase_command,"erase %s +%s",getenv("uboot_addr"),getenv("uboot_size"));
+                        sprintf(cp_command,"cp.b 0x81000000 %s %s",getenv("uboot_addr"),getenv("filesize"));
+                        printf("%s\n",erase_command);
+                        printf("%s\n",cp_command);
+                    }
+                    run_command(erase_command, 0);
+                    run_command(cp_command, 0);
+                }
+                else if(strstr(firmware_name,".img")){
+                    run_command("erase 0x9f060000 +0x200000 && cp.b 0x81000000 0x9f060000 0x200000 && nand erase && nand write 0x81200000 0 0xae0000" , 0);
+                }
+                printf("Update Done");
+                send_U_G_ok(); 
+                run_command("res", 0);
+                break;
+            }
+
 			if (tstc()) {	/* we got a key press	*/
 				//abort  = 1;	/* don't auto boot	*/
 				//bootdelay = 0;	/* no more delay	*/
@@ -349,6 +425,7 @@ void bootcount_store(ulong count)
 
 extern int reset_button_status(void);
 
+char rst_key_5s = 0;
 void main_loop (void)
 {
 #ifndef CFG_HUSH_PARSER
@@ -478,8 +555,10 @@ void main_loop (void)
                         // run web failsafe mode
                         if(counter >= CONFIG_DELAY_TO_AUTORUN_HTTPD){
                                 printf("\n\nButton was pressed for %d sec...\nHTTP server is starting for firmware update...\n\n", counter); 
-								mifi_v3_send_msg("{ \"system\": \"gouboot\" }");
-								NetLoopHttpd();
+                                rst_key_5s = 1;
+                                run_command("dhcpd start", 0);
+                                rst_key_5s = 0;
+						    	NetLoopHttpd();
                                 bootdelay = -1;
                         } else {
                                 printf("\n\n## Error: button wasn't pressed long enough!\nContinuing normal boot...\n\n");
@@ -587,7 +666,13 @@ void main_loop (void)
 # ifdef CONFIG_AUTOBOOT_KEYED
 		disable_ctrlc(prev);	/* restore Control C checking */
 # endif
-	}
+
+    //	 printf("\n## Error: failed to boot linux !\nHTTPD server is starting...##\n\n");
+    //   run_command("dhcpd start", 0);
+        run_command("dhcpd start", 0);
+	    NetLoopHttpd();
+        bootdelay = -1;
+    }
 
 # ifdef CONFIG_MENUKEY
 	if (menukey == CONFIG_MENUKEY) {

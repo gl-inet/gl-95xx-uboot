@@ -106,6 +106,10 @@ DECLARE_GLOBAL_DATA_PTR;
 # define ARP_TIMEOUT_COUNT  (CONFIG_NET_RETRY_COUNT)
 #endif
 
+extern char NetUipLoop;
+extern char dhcpd_end;
+void dev_received(volatile uchar * inpkt, int len);
+
 unsigned char *webfailsafe_data_pointer = NULL;
 int	webfailsafe_is_running = 0;
 int	webfailsafe_ready_for_upgrade = 0;
@@ -1222,6 +1226,11 @@ NetReceive(volatile uchar * inpkt, int len)
 	printf("packet received\n");
 #endif
 
+    if(NetUipLoop) {
+		dev_received(inpkt, len);
+		return;
+	}
+
 	if(webfailsafe_is_running){
 		NetReceiveHttpd(inpkt, len);
 		return;
@@ -1892,19 +1901,33 @@ void NetReceiveHttpd(volatile uchar * inpkt, int len){
 		}
         }
 }
+/*
+void eth0_broadcast_rec_off(void)
+{
+  ath_reg_wr_nf(0x19000058, ath_reg_rd(0x19000058)|(0x3<<8));
+}
 
+void eth1_broadcast_rec_off(void)
+{
+  ath_reg_wr_nf(0x1A000058, ath_reg_rd(0x19000058)|(0x3<<8));
+}
+*/
 /* *************************************
  *
  * HTTP web server for web failsafe mode
  *
  ***************************************/
+extern int clinet_ipaddr;
 int NetLoopHttpd(void){
 	bd_t *bd = gd->bd;
 	unsigned short int ip[2];
 	unsigned char ethinit_attempt = 0;
 	struct uip_eth_addr eaddr;
-        static uchar mac[6];
+    char clinet_ipaddr_str[16]= {0};
+    static uchar mac[6];
 	char load_count=0;
+    dhcpd_end = 0;
+    NetUipLoop = 0;
 #ifdef CONFIG_NET_MULTI
 	NetRestarted = 0;
 	NetDevExists = 0;
@@ -2005,10 +2028,8 @@ int NetLoopHttpd(void){
 	ip[1] = (0xFFFFFF00 & 0x0000FFFF);
 
 	uip_setnetmask(ip);
-
 	// should we also set default router ip address?
 	//uip_setdraddr();
-
 	// show current progress of the process
 	do_http_progress(WEBFAILSAFE_PROGRESS_START);
 
@@ -2017,8 +2038,17 @@ int NetLoopHttpd(void){
 #ifdef ET_DEBUG
         printf("sending ARP for %08lx\n", getenv("serverip"));
 #endif
+        eth0_broadcast_rec_off();
+        eth1_broadcast_rec_off();
         memcpy(mac, NetEtherNullAddr, 6);
         NetArpWaitPacketIP = getenv_IPaddr("serverip");
+       /*
+        NetArpWaitPacketIP = clinet_ipaddr;
+        ip_to_string(clinet_ipaddr,clinet_ipaddr_str);
+        setenv("serverip",clinet_ipaddr_str);
+        saveenv();
+        printf("serverip: %s\n",clinet_ipaddr_str);
+        */
         NetArpWaitPacketMAC = mac;
 
         /* size of the waiting packet */
@@ -2037,8 +2067,9 @@ int NetLoopHttpd(void){
 		 *	Check the ethernet for a new packet.
 		 *	The ethernet receive routine will process it.
 		 */
-		if(eth_rx() > 0)
-			HttpdHandler();
+        if(eth_rx() > 0){
+               HttpdHandler();
+        }
 
 
 		// if CTRL+C was pressed -> return!

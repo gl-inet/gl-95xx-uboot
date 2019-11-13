@@ -281,12 +281,14 @@ char update_msg(void){
         goto S_D;
     }
     if(file_name_ok_flag){
+        eth_halt();
         file_name_ok_flag = 0;
         NetUipLoop = 0;
         one_time = 1;
         return 1;
     }
 
+    file_name_ok_flag = 0;
     NetUipLoop = 0;
     return 0;
 
@@ -392,6 +394,31 @@ uip_main(void)
   }
  }
   return 0;
+}
+
+uint show_kernel( uint addr );
+uint show_kernel( uint addr )
+{
+    char linebuf[4];
+    uint *uip = (uint*)linebuf;
+    uint k_size = 0;
+    uint i = 0;
+
+    for(i=0;i<0xffff;i++){   
+      //  printf("%08lx:  %08x  \n",addr, (*uip = *((uint *)addr)));
+        if((*uip)==0x55424923){
+          //  printf("%08lx:  %08x  \n",addr, (*uip = *((uint *)addr)));
+            k_size=0x10000 * i ;
+            break;
+                        
+        }
+        else{
+            addr+=0x10000;    
+                        
+        }
+    }
+    printf("kernel size:0x%08lx  \n",k_size);
+    return k_size;
 }
 /*---------------------------------------------------------------------------*/
 void

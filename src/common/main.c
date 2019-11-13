@@ -256,6 +256,7 @@ static int hex_str_to_num(char *str, int length)
     return result;
 }
 
+extern uint show_kernel(uint addr);
 static __inline__ int abortboot(int bootdelay)
 {
 	int abort = 0;
@@ -314,8 +315,8 @@ static __inline__ int abortboot(int bootdelay)
                 if(strstr(firmware_name,".bin")){
                     if(327680<hex_str_to_num(getenv("filesize"),strlen(getenv("filesize")))){ 
 
-                        sprintf(erase_command,"erase %s +%s",getenv("firmware_addr"),getenv("filesize"));
-                        sprintf(cp_command,"cp.b 0x81000000  %s %s",getenv("firmware_addr"),getenv("filesize"));
+                        sprintf(erase_command,"erase %s +0x%x",getenv("firmware_addr"),show_kernel(0x81000000));
+                        sprintf(cp_command,"cp.b 0x81000000  %s 0x%x",getenv("firmware_addr"),show_kernel(0x81000000));
                         printf("%s\n",erase_command);
                         printf("%s\n",cp_command);
                     }
@@ -329,7 +330,21 @@ static __inline__ int abortboot(int bootdelay)
                     run_command(cp_command, 0);
                 }
                 else if(strstr(firmware_name,".img")){
-                    run_command("erase 0x9f060000 +0x200000 && cp.b 0x81000000 0x9f060000 0x200000 && nand erase && nand write 0x81200000 0 0xae0000" , 0);
+                    sprintf(erase_command,"erase %s +0x%x",getenv("firmware_addr"),show_kernel(0x81000000));
+                    sprintf(cp_command,"cp.b 0x81000000  %s 0x%x",getenv("firmware_addr"),show_kernel(0x81000000));
+                    printf("%s\n",erase_command);
+                    printf("%s\n",cp_command);
+                    run_command(erase_command, 0);
+                    run_command(cp_command, 0);
+                    run_command("nand erase && nand write 0x81200000 0 0xae0000" , 0);
+                }
+                else if(strstr(firmware_name,".ubi")){
+                    sprintf(erase_command,"erase %s +0x%x",getenv("firmware_addr"),show_kernel(0x81000000));
+                    sprintf(cp_command,"cp.b 0x81000000  %s 0x%x",getenv("firmware_addr"),show_kernel(0x81000000));
+                    printf("%s\n",erase_command);
+                    printf("%s\n",cp_command);
+                    run_command(erase_command, 0);
+                    run_command(cp_command, 0);
                 }
                 printf("Update Done");
                 send_U_G_ok(); 
@@ -353,6 +368,7 @@ static __inline__ int abortboot(int bootdelay)
                                 {
                                         abort  = 1;     /* don't auto boot      */
                                         bootdelay = 1;  /* no more delay        */
+                                        eth_halt();
                                         break;
                                 }
 # endif

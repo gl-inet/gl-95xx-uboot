@@ -183,7 +183,7 @@ static int httpd_findandstore_firstchunk(void){
 					else{
 						end=(char *)strstr((char *)start, "name=\"gl_firmware\"");
 						if(end){
-								if(strstr((char *)start, ".img\"")){
+								if(strstr((char *)start, ".img\"")||strstr((char *)start, ".ubi\"")){
 										webfailsafe_upgrade_type = WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE;
 									}
 								else if(strstr((char *)start, ".bin\"")){
@@ -243,8 +243,10 @@ static int httpd_findandstore_firstchunk(void){
 				// firmware can't exceed: (FLASH_SIZE -  WEBFAILSAFE_UPLOAD_LIMITED_AREA_IN_BYTES)
 				} else if(hs->upload_total > (info->size - WEBFAILSAFE_UPLOAD_LIMITED_AREA_IN_BYTES)){
 
-					printf("## Error: file too big!\n");
-					webfailsafe_upload_failed = 1;
+                    if(webfailsafe_upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_NOR_FIRMWARE){
+                        printf("## Error: file too big!\n");
+                        webfailsafe_upload_failed = 1;
+                    }
 
 				}
 

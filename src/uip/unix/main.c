@@ -62,7 +62,6 @@ dev_send(void)
     NetTxPacket = KSEG1ADDR(NetTxPacket);
     memcpy((void *)NetTxPacket, uip_buf, uip_len);
     eth_send(NetTxPacket, uip_len);
-    printf("devsend\n");
     return 0;
 }
 
@@ -385,11 +384,11 @@ uip_main(void)
     if(timer_expired(&arp_timer)) {
         timer_reset(&arp_timer);
         uip_arp_timer();
-       // dhcpd_end = 0;
-       // eth_halt();
-       // NetUipLoop=0;
-       // printf("dhcpd timeout\n");
-       // return (-1);
+        dhcpd_end = 0;
+        eth_halt();
+        NetUipLoop=0;
+        printf("dhcpd timeout\n");
+        return (-1);
     }
   }
  }
@@ -405,7 +404,7 @@ uint show_kernel( uint addr )
     uint i = 0;
 
     for(i=0;i<0xffff;i++){   
-      //  printf("%08lx:  %08x  \n",addr, (*uip = *((uint *)addr)));
+        *uip = *((uint *)addr);
         if((*uip)==0x55424923){
           //  printf("%08lx:  %08x  \n",addr, (*uip = *((uint *)addr)));
             k_size=0x10000 * i ;
@@ -417,7 +416,7 @@ uint show_kernel( uint addr )
                         
         }
     }
-    printf("kernel size:0x%08lx  \n",k_size);
+   // printf("kernel size:0x%08lx  \n",k_size);
     return k_size;
 }
 /*---------------------------------------------------------------------------*/

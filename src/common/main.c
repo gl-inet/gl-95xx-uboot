@@ -276,7 +276,7 @@ static __inline__ int abortboot(int bootdelay)
 	printf(CONFIG_MENUPROMPT, bootdelay);
 #else
 
-    run_command("dhcpd start", 0);
+   // run_command("dhcpd start", 0);
 	printf("Hit 'gl' to stop autoboot: %2d ", bootdelay);
 #endif
 
@@ -299,7 +299,7 @@ static __inline__ int abortboot(int bootdelay)
 
 		/* delay 100 * 10ms */
 		for (i=0; !abort && i<100; ++i) {
-
+#if 0
             if(update_msg()){
                 abort  = 1; 
                 bootdelay = 1;
@@ -351,7 +351,7 @@ static __inline__ int abortboot(int bootdelay)
                 run_command("res", 0);
                 break;
             }
-
+#endif
 			if (tstc()) {	/* we got a key press	*/
 				//abort  = 1;	/* don't auto boot	*/
 				//bootdelay = 0;	/* no more delay	*/

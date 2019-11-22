@@ -2079,7 +2079,7 @@ int NetLoopHttpd(void){
 			// reset global variables to default state
 			webfailsafe_is_running = 0;
 			webfailsafe_ready_for_upgrade = 0;
-			webfailsafe_upgrade_type = WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE;
+			webfailsafe_upgrade_type = 3;//WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE;
 
 			/* Invalidate the last protocol */
 			eth_set_last_protocol(BOOTP);
@@ -2122,7 +2122,7 @@ int NetLoopHttpd(void){
 	// reset global variables to default state
 	webfailsafe_is_running = 0;
 	webfailsafe_ready_for_upgrade = 0;
-	webfailsafe_upgrade_type = WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE;
+	webfailsafe_upgrade_type = 3;//WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE;
 
 	NetBootFileXferSize = 0;
 

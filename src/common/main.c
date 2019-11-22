@@ -315,8 +315,8 @@ static __inline__ int abortboot(int bootdelay)
                 if(strstr(firmware_name,".bin")){
                     if(327680<hex_str_to_num(getenv("filesize"),strlen(getenv("filesize")))){ 
 
-                        sprintf(erase_command,"erase %s +0x%x",getenv("firmware_addr"),show_kernel(0x81000000));
-                        sprintf(cp_command,"cp.b 0x81000000  %s 0x%x",getenv("firmware_addr"),show_kernel(0x81000000));
+                        sprintf(erase_command,"erase %s  $filesize",getenv("firmware_addr");
+                        sprintf(cp_command,"cp.b 0x81000000  %s $filesize",getenv("firmware_addr");
                         printf("%s\n",erase_command);
                         printf("%s\n",cp_command);
                     }
@@ -572,7 +572,8 @@ void main_loop (void)
                         if(counter >= CONFIG_DELAY_TO_AUTORUN_HTTPD){
                                 printf("\n\nButton was pressed for %d sec...\nHTTP server is starting for firmware update...\n\n", counter); 
                                 rst_key_5s = 1;
-                                run_command("dhcpd start", 0);
+                               // run_command("dhcpd start", 0);
+                                printf("{ \"system\": \"goweb\"  }");
                                 rst_key_5s = 0;
 						    	NetLoopHttpd();
                                 bootdelay = -1;

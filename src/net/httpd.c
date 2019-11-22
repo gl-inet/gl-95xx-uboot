@@ -69,10 +69,10 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		sprintf(buf,
 				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX",
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
-				show_kernel(WEBFAILSAFE_UPLOAD_RAM_ADDRESS),
+                size,			
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
-				show_kernel(WEBFAILSAFE_UPLOAD_RAM_ADDRESS));
+                size);
 #elif CONFIG_AR300M
 	} else if(upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE){
 
@@ -122,11 +122,11 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		sprintf(buf,
 				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX",
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
-				show_kernel(WEBFAILSAFE_UPLOAD_RAM_ADDRESS),
+				size,
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
 			    //update to nor flash 
-				show_kernel(WEBFAILSAFE_UPLOAD_RAM_ADDRESS));
+				size);
 	}
 		
 	else {

@@ -515,8 +515,10 @@ void main_loop (void)
 		s = getenv ("bootcmd");
 
 //	debug ("### main_loop: bootcmd=\"%s\"\n", s ? s : "<UNDEFINED>");
-
 	if (bootdelay >= 0 && s && !abortboot (bootdelay)) {
+#ifdef CONFIG_GL_RSA
+	rsa_verify_into_firmware();
+#endif
 
 #ifdef CONFIG_BOOTCOUNT_LIMIT
 	bootcount = bootcount_load();
@@ -615,6 +617,10 @@ void main_loop (void)
 	 * Main Loop for Monitor Command Processing
 	 */
 mainloop:
+#ifdef CONFIG_GL_RSA
+	rsa_verify_into_uboot_console();
+#endif
+
 #ifdef CFG_HUSH_PARSER
 	parse_file_outer();
 	/* This point is never reached */

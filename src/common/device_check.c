@@ -57,7 +57,9 @@ int check_nand_data()
 
 int check_tftp_file()
 {
+#ifndef CONFIG_GL_RSA
 	run_command("run lf",0);
+#endif
 	return 0;
 }
 

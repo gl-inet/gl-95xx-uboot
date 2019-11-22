@@ -2068,6 +2068,14 @@ int NetLoopHttpd(void){
 			}
 			continue;
 		}
+
+#ifdef CONFIG_GL_RSA
+		// check rsa verify status, break when the status fail
+		if ( rsa_verify_update_is_fail() ) {
+			break;
+		}
+#endif
+
 		printf("\nstop eth interface!!\n");
 		// stop eth interface
 		eth_halt();

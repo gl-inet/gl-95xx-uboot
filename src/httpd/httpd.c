@@ -229,7 +229,11 @@ static int httpd_findandstore_firstchunk(void){
 				// has correct size (for every type of upgrade)
 
 				// U-Boot
+#ifdef CONFIG_GL_RSA
+				if((webfailsafe_upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_UBOOT) && (hs->upload_total > WEBFAILSAFE_UPLOAD_UBOOT_SIZE_IN_BYTES + 0x10000)){
+#else
 				if((webfailsafe_upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_UBOOT) && (hs->upload_total > WEBFAILSAFE_UPLOAD_UBOOT_SIZE_IN_BYTES)){
+#endif
 
 					printf("## Error: wrong file size, should be: %d bytes!\n", WEBFAILSAFE_UPLOAD_UBOOT_SIZE_IN_BYTES);
 					webfailsafe_upload_failed = 1;
@@ -624,7 +628,16 @@ void httpd_appcall(void){
 
 						// which website will be returned
 						if(!webfailsafe_upload_failed){
+#ifdef CONFIG_GL_RSA
+							if(rsa_verify_update(webfailsafe_upgrade_type, WEBFAILSAFE_UPLOAD_RAM_ADDRESS, NetBootFileXferSize) == 0) {
+								fs_open(file_flashing_html.name, &fsfile);
+							} else {
+								fs_open(file_fail_html.name, &fsfile);
+							}
+							NetBootFileXferSize = NetBootFileXferSize - 0x10000;
+#else
 							fs_open(file_flashing_html.name, &fsfile);
+#endif
 						} else {
 							fs_open(file_fail_html.name, &fsfile);
 						}

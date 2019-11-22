@@ -149,7 +149,9 @@ LIBS += drivers/libdrivers.a
 #endif
 #LIBS += drivers/sk98lin/libsk98lin.a
 #endif
-
+ifdef CONFIG_GL_RSA
+LIBS += lib_rsa/librsa.a
+endif
 LIBS += net/libnet.a
 LIBS += rtc/librtc.a
 LIBS += httpd/libhttpd.a
@@ -2112,6 +2114,9 @@ ifdef GPIO_RESET
 endif
 ifdef GPIO_BLE_RESET
 	@echo "#define GPIO_BLE_RESET $(GPIO_BLE_RESET)" >> include/config.h
+endif
+ifdef CONFIG_GL_RSA
+	@echo "#define CONFIG_GL_RSA $(CONFIG_GL_RSA)" >> include/config.h
 endif
 ifdef GPIO_HUB_RESET
 	@echo "#define GPIO_HUB_RESET $(GPIO_HUB_RESET)" >> include/config.h

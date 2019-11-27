@@ -71,10 +71,12 @@ fs_strcmp(const char *str1, const char *str2)
   if(str2[i] == 0 ||
      str1[i] == '\r' || 
      str1[i] == '\n') {
+    printf("exitloop1\n");
     return 0;
   }
 
   if(str1[i] != str2[i]) {
+    printf("exitloop2\n");
     return 1;
   }
 
@@ -86,7 +88,7 @@ fs_strcmp(const char *str1, const char *str2)
 int
 fs_open(const char *name, struct fs_file *file)
 {
-printf("open file: %s",name);
+    printf("open file: %s",name);
 
 #ifdef FS_STATISTICS
 #if FS_STATISTICS == 1

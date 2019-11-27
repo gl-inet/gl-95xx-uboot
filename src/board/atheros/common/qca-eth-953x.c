@@ -430,7 +430,8 @@ static void ath_gmac_get_ethaddr(struct eth_device *dev)
 		return;
 	}
 	/* Use fixed address if the above address is invalid */
-	if (mac[0] != 0x00 || (mac[0] == 0xff && mac[5] == 0xff))
+    if(1)
+//	if (mac[0] != 0x00 || (mac[0] == 0xff && mac[5] == 0xff))
 #else
 	if (1)
 #endif

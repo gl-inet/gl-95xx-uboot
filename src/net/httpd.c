@@ -44,7 +44,7 @@ void HttpdStart(void){
 	uip_init();
 	httpd_init();
 }
-
+extern uint show_kernel(uint addr);
 int do_http_upgrade(const ulong size, const int upgrade_type){
 	char buf[200];	// erase 0xXXXXXXXX +0xXXXXXXXX; cp.b 0xXXXXXXXX 0xXXXXXXXX 0xXXXXXXXX (68 signs)
 #if !defined(WEBFAILSAFE_UPLOAD_ART_ADDRESS)
@@ -69,10 +69,10 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		sprintf(buf,
 				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX",
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
-				size,
+                size,			
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
-				size);
+                size);
 #elif CONFIG_AR300M
 	} else if(upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE){
 
@@ -88,12 +88,12 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		sprintf(buf,
 				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX; nand erase; nand write 0x%lX 0 0x%lX",
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
-				WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE,
+				show_kernel(WEBFAILSAFE_UPLOAD_RAM_ADDRESS),
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
-				WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE,
-				WEBFAILSAFE_UPLOAD_RAM_ADDRESS+WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE,
-				size-WEBFAILSAFE_UPLOAD_NAND_KERNEL_SIZE);
+				show_kernel(WEBFAILSAFE_UPLOAD_RAM_ADDRESS),
+				WEBFAILSAFE_UPLOAD_RAM_ADDRESS+show_kernel(WEBFAILSAFE_UPLOAD_RAM_ADDRESS),
+				size-show_kernel(WEBFAILSAFE_UPLOAD_RAM_ADDRESS));
 #endif
 
 	} else if(upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_ART){
@@ -125,7 +125,8 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 				size,
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
-				size);//update to nor flash 
+			    //update to nor flash 
+				size);
 	}
 		
 	else {

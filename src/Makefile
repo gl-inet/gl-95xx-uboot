@@ -155,6 +155,8 @@ endif
 LIBS += net/libnet.a
 LIBS += rtc/librtc.a
 LIBS += httpd/libhttpd.a
+LIBS += uip/libuip.a
+
 #LIBS += post/libpost.a post/cpu/libcpu.a
 LIBS += $(BOARDLIBS)
 
@@ -2046,7 +2048,9 @@ board953x_config		:	unconfig
 ifdef EXT_ADDR_SUPPORT
 	@echo '#define ENABLE_EXT_ADDR_SUPPORT	$(EXT_ADDR_SUPPORT)'	>>include/config.h
 endif
-
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/uboot.html
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/art.html
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/index.html
 ifdef BOOT_ADDR
 	@echo '#define GL_BOOT_ADDR	$(BOOT_ADDR)'	>>include/config.h
 endif

@@ -16,7 +16,7 @@ typedef unsigned int u32_t;
 #endif
 
 #ifndef DHCPD_ADDR_END 
-#define  DHCPD_ADDR_END  254
+#define  DHCPD_ADDR_END  2 //
 #endif
 
 #define IP_BITMAP_SIZE ((DHCPD_ADDR_END-DHCPD_ADDR_START)/sizeof(u8_t)+1)

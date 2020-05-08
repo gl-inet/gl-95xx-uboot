@@ -3315,6 +3315,9 @@ board956x_config: unconfig
 ifdef EXT_ADDR_SUPPORT
 	@echo '#define ENABLE_EXT_ADDR_SUPPORT	$(EXT_ADDR_SUPPORT)'	>>include/config.h
 endif
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/uboot.html
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/art.html
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/index.html
 
 ifdef BOOT_ADDR
 	@echo '#define GL_BOOT_ADDR	$(BOOT_ADDR)'	>>include/config.h

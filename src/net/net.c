@@ -1205,6 +1205,156 @@ static void CDPStart(void)
 #endif	/* CFG_CMD_CDP */
 
 
+char gl_probe_upgrade=0;
+char upgrade_listen=0;
+
+static char gl_cmd_msg[5][256]={0}; 
+
+
+
+void gl_upgrade_send_msg(char *msg)
+{
+    char i = 0;
+	char msg_len=strlen(msg);
+    unsigned char rep[2][42]={
+		{ 0xff,0xff,0xff,0xff,0xff,0xff,0x14,0x6b,0x9c,0xb7,0x12,0x30,0x08,0x00,0x45,0x00,0x00,0x4d,0x00,0x01,0x00,0x00,0x40,0x01,0xb9,0x06,0xc0,0xa8,0x01,0x01,0xff,0xff,0xff,0xff,0x08,0x00,0xfa,0xb1,0x00,0x01,0x00,0x01},
+		{0x00 }
+	};
+	struct eth_device *eth = eth_get_dev();
+	if(eth->state == ETH_STATE_PASSIVE){//命令执行过程中可能会导致网卡关闭，需要重新初始化
+			bd_t *bd = gd->bd;
+			eth_init(bd);
+		}
+	memcpy(rep[1],msg,msg_len);
+    //dev_init_up();
+    for(i=0;i<5;i++){
+        NetTxPacket = KSEG1ADDR(NetTxPacket);
+        memcpy((void *)NetTxPacket, (unsigned char *)rep, 42 + msg_len);
+        eth_send(NetTxPacket, 42 + msg_len);
+		udelay (10000);
+    }
+    //printf("send msg");
+}
+
+
+char get_crc_param(char *buf,char *result,char num)
+{
+	int i=0;
+	int cunt=-1;
+	char *start=buf;
+	int len=0;
+	while((buf[i] != '\0') && (buf[i] != '\r') && (buf[i] != '\n') ){
+		if(buf[i] == ','){
+			if(++cunt == num){
+				len = buf+i-start;
+				memcpy(result,start,len);
+				result[len]='\0';
+				return 0;
+			}
+			start=buf+i+1;
+		}
+		i++;
+	}
+	if((buf[i] == '\0') && (++cunt == num)){//get the end param
+		len = buf+i-start;
+		memcpy(result,start,len);
+		result[len]='\0';
+		return 0;
+	}
+	return -1;
+}
+
+int gl_upgrade_cmd_handle(char *cmd)
+{
+	if(strncmp(cmd,"scan",4)==0){
+		gl_upgrade_send_msg("glroute:hello");
+		upgrade_listen = 1;
+		printf("glinet scan\n");
+	}
+	else if(strncmp(cmd,"cmd-",4)==0){
+		int i=0;
+		for(i=0;i<5;i++){
+			if(strlen(gl_cmd_msg[i])==0){
+				strcpy(gl_cmd_msg[i],cmd+4);
+				gl_upgrade_send_msg("glroute:ok");
+				printf("\nCMD:%s\n",gl_cmd_msg[i]);
+				break;
+			}
+		}
+		if( i >= 5 )
+			gl_upgrade_send_msg("glroute:err-no_space");
+	}
+	else if (strncmp(cmd,"do-",3)==0){
+		int i=0;
+		for(i=0;i<5;i++){
+			if(strlen(gl_cmd_msg[i])){
+				printf("\nDo cmd\n");
+				setenv("gl_do_cmd",gl_cmd_msg[i]);
+				run_command("run gl_do_cmd", 0);
+			}
+			else{
+				break;
+			}
+		}
+		memset(gl_cmd_msg,0,sizeof(gl_cmd_msg));
+		gl_upgrade_send_msg("glroute:ok");
+	}
+	else if (strncmp(cmd,"dhcp",4)==0){
+		run_command("dhcpd start", 0);
+		gl_upgrade_send_msg("glroute:ok");
+	}
+	else if (strncmp(cmd,"crc-",4)==0){
+		char str_value[16]={0};
+		ulong addr, length,raw,crc;
+		get_crc_param(cmd+4,str_value,0);
+		addr  = simple_strtoul(str_value,NULL,16);
+		get_crc_param(cmd+4,str_value,1);
+		length = simple_strtoul(str_value,NULL,16);
+		get_crc_param(cmd+4,str_value,2);
+		raw = simple_strtoul(str_value,NULL,16);
+		crc = crc32 (0, (const uchar *) addr, length);
+		printf("crc:%x,%x,%x,%x\n",addr,length,raw,crc);
+		if(crc == raw){
+			gl_upgrade_send_msg("glroute:ok");
+			gl_probe_upgrade = 0;//升级成功，退出升级模式，防止重复刷机
+			upgrade_listen = 0;
+		}
+		else{
+			char err_msg[32]={0};
+			sprintf(err_msg,"glroute:err-crc_%x",crc);
+			gl_upgrade_send_msg(err_msg);
+		}
+			
+	}
+
+	return 0;
+}
+
+void gl_upgrade_hook(volatile uchar * inpkt, int len)
+{
+	char pk_buf[1502]={0};
+	//int i=0;
+	memcpy(pk_buf, (const char *)inpkt, len);
+	/*for(i=0;i<len;i++){
+		printf("%d:%02X,",i,pk_buf[i]);
+	}*/
+	if(strstr(pk_buf+42,"glinet:")){
+		//printf("recv gl cmd\n");
+		gl_upgrade_cmd_handle(pk_buf+42+7);
+	}
+}
+
+void gl_upgrade_probe()
+{
+	eth_rx();
+}
+
+void gl_upgrade_listen()
+{
+	while(upgrade_listen && gl_probe_upgrade)
+		eth_rx();
+}
+
 void
 NetReceive(volatile uchar * inpkt, int len)
 {
@@ -1225,6 +1375,12 @@ NetReceive(volatile uchar * inpkt, int len)
 #ifdef ET_DEBUG
 	printf("packet received\n");
 #endif
+	if(gl_probe_upgrade){
+		gl_probe_upgrade = 0;//执行命令时先停止接受指令，防止命令出错
+		gl_upgrade_hook(inpkt, len);
+		gl_probe_upgrade = 1;
+		return;
+	}
 
     if(NetUipLoop) {
 		dev_received(inpkt, len);

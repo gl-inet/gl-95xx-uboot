@@ -66,23 +66,14 @@ static u8_t
 fs_strcmp(const char *str1, const char *str2)
 {
   u8_t i;
-  i = 0;
- loop:
-  if(str2[i] == 0 ||
-     str1[i] == '\r' || 
-     str1[i] == '\n') {
-    printf("exitloop1\n");
-    return 0;
+  for(i=0;;i++)
+  {
+	  if(str1[i] !=str2[i])
+		  return 1;
+	  else if(str1[i]=='\0')
+		  return 0;
   }
 
-  if(str1[i] != str2[i]) {
-    printf("exitloop2\n");
-    return 1;
-  }
-
-
-  ++i;
-  goto loop;
 }
 /*-----------------------------------------------------------------------------------*/
 int

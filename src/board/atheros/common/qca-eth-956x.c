@@ -414,18 +414,18 @@ static void ath_gmac_hw_start(ath_gmac_mac_t *mac)
 	ath_gmac_reg_wr(mac, ATH_MAC_FIFO_CFG_1, 0x10ffff);
 	ath_gmac_reg_wr(mac, ATH_MAC_FIFO_CFG_2, 0xAAA0555);
 
-	ath_gmac_reg_rmw_set(mac, ATH_MAC_FIFO_CFG_4, 0x3ffff);
+	ath_gmac_reg_rmw_set(mac, ATH_MAC_FIFO_CFG_4, 0x3fdff);
 	/*
 	 * Setting Drop CRC Errors, Pause Frames,Length Error frames
 	 * and Multi/Broad cast frames.
 	 */
 
-	ath_gmac_reg_wr(mac, ATH_MAC_FIFO_CFG_5, 0x7eccf);
+	ath_gmac_reg_wr(mac, ATH_MAC_FIFO_CFG_5, 0x7efcf);
 
 	ath_gmac_reg_wr(mac, ATH_MAC_FIFO_CFG_3, 0x1f00140);
 
-	printf(": cfg1 %#x cfg2 %#x\n", ath_gmac_reg_rd(mac, ATH_MAC_CFG1),
-			ath_gmac_reg_rd(mac, ATH_MAC_CFG2));
+	printf(": cfg1 %#x cfg2 %#x fifo_cfg4 %#x\n", ath_gmac_reg_rd(mac, ATH_MAC_CFG1),
+			ath_gmac_reg_rd(mac, ATH_MAC_CFG2),ath_gmac_reg_rd(mac, ATH_MAC_FIFO_CFG_4));
 
 
 }

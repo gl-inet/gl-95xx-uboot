@@ -230,9 +230,28 @@ dev_init_up(void)
     DECLARE_GLOBAL_DATA_PTR;
     bd_t *bd = gd->bd;
     eth_sa = eth_init(bd);
-    eth0_broadcast_rec_on();
-    eth1_broadcast_rec_on();
+    //eth0_broadcast_rec_on();
+    //eth1_broadcast_rec_on();
     return eth_sa;
+}
+
+char gl_set_uip_info()
+{
+	//int i=5;
+	uip_ipaddr_t ipaddr;
+	uip_init();
+	uip_ipaddr(ipaddr, 192,168,1,1);  //ÅäÖÃIP
+	uip_sethostaddr(ipaddr);
+	uip_ipaddr(ipaddr, 192,168,1,1);  //ÅäÖÃÍø¹Ø
+	uip_setdraddr(ipaddr);
+	uip_ipaddr(ipaddr, 255,255,255,0);//ÅäÖÃ×ÓÍøÑÚÂë
+ 	uip_setnetmask(ipaddr);
+	uip_gethostaddr(ipaddr); 
+
+	if(0== dev_init_up()){
+		return 0;
+	}
+	return 1;
 }
 
 

@@ -257,6 +257,11 @@ static int hex_str_to_num(char *str, int length)
 }
 
 extern uint show_kernel(uint addr);
+extern char gl_set_uip_info();
+extern void gl_upgrade_probe();
+extern void gl_upgrade_listen();
+
+extern char gl_probe_upgrade;
 static __inline__ int abortboot(int bootdelay)
 {
 	int abort = 0;
@@ -294,12 +299,20 @@ static __inline__ int abortboot(int bootdelay)
 	}
 #endif
 	char tmp_flag=0,tmp_key=0;
+
 	while ((bootdelay >= 0) && (!abort)) {
 		int i;
+		gl_probe_upgrade = gl_set_uip_info();
 
 		/* delay 100 * 10ms */
 		for (i=0; !abort && i<100; ++i) {
+			if(gl_probe_upgrade){
+				gl_upgrade_probe();
+				gl_upgrade_listen();
+			}
+				
 #if 0
+		
             if(update_msg()){
                 abort  = 1; 
                 bootdelay = 1;
@@ -368,6 +381,7 @@ static __inline__ int abortboot(int bootdelay)
                                 {
                                         abort  = 1;     /* don't auto boot      */
                                         bootdelay = 1;  /* no more delay        */
+										gl_probe_upgrade = 0;
                                         eth_halt();
                                         break;
                                 }
@@ -612,6 +626,7 @@ void main_loop (void)
 
 //	debug ("### main_loop: bootcmd=\"%s\"\n", s ? s : "<UNDEFINED>");
 	if (bootdelay >= 0 && s && !abortboot (bootdelay)) {
+		gl_probe_upgrade = 0;//停止升级检测
 #ifdef CONFIG_GL_RSA
 	rsa_verify_into_firmware();
 #endif

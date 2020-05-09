@@ -1267,9 +1267,11 @@ char get_crc_param(char *buf,char *result,char num)
 int gl_upgrade_cmd_handle(char *cmd)
 {
 	if(strncmp(cmd,"scan",4)==0){
-		gl_upgrade_send_msg("glroute:hello");
-		upgrade_listen = 1;
-		printf("glinet scan\n");
+		if (upgrade_listen == 0){//只有第一次收到scan才回复hello,防止上位机被打断时产生异常
+			gl_upgrade_send_msg("glroute:hello");
+			upgrade_listen = 1;
+			printf("glinet scan\n");
+			}
 	}
 	else if(strncmp(cmd,"cmd-",4)==0){
 		int i=0;

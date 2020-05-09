@@ -65,30 +65,47 @@ int check_tftp_file()
 
 
 int select_boot_dev(){
+#ifdef CONFIG_AR300M
 	char *dev=NULL;
+	char *boot_local=NULL;
 	unsigned int val=0;
 	char boot_cmd[30]={0};
 		
 	dev = getenv("boot_dev");
-	if(strcmp(dev,"on") == 0)
-	{
-
-		val = switch_boot_load();
-		printf("val is %d\n",val);
-		switch(val)//from nand boot
+	boot_local = getenv("boot_local");
+	if(dev != NULL){
+		if(strcmp(dev,"on") == 0)
 		{
-		case 0:
+
+			val = switch_boot_load();
+			printf("val is %d\n",val);
+			switch(val)//from nand boot
+			{
+			case 0:
 				sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);
 				run_command(boot_cmd,0);
 				break;
-		case 1:
-		case 2:
+			case 1:
+			case 2:
 				run_command("nboot 0x81000000 0",0);
 				break;
-		default:
+			default:
 				break;
-		}		
+			}		
+		}
 	}
+	if(boot_local != NULL){
+		if(strcmp(boot_local,"nor") == 0){
+			run_command("bootm 0x9f050000",0);
+			}
+		else{
+			run_command("nboot 0x81000000 0",0);
+			}
+	}
+#endif
+	return 0;
+
+
 }
 /****************************************************************************/
 /*

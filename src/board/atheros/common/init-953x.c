@@ -357,6 +357,20 @@ static int ath_init_gpio()
 	ath_reg_wr_nf(AR7240_GPIO_OE,gpio_oe);
 	//default value is low for ouput pin
 	ath_reg_wr_nf(AR7240_GPIO_BASE+0x10,(0x1<<0)|(0x1<<2)|(0x1<<4)|(0x1<<12)|(0x1<<13)|(0x1<<14)|(0x1<<15)|(0x1<<16)|(0x1<<17));
+#elif  CONFIG_X300B
+        unsigned int gpio_fun1  = ath_reg_rd(AR7240_GPIO_BASE+0x30);
+        unsigned int gpio_oe = ath_reg_rd(AR7240_GPIO_OE);
+        ath_reg_wr_nf(AR7240_GPIO_BASE+0x2c,0X160000);//GPIO0-GPIO3 seting to GPIO functionality
+        gpio_fun1 &= ~0xff;//GPIO4
+        ath_reg_wr_nf(AR7240_GPIO_BASE+0x30,gpio_fun1);//GPIO4 seting to GPIO functionality
+        ath_reg_wr_nf(AR7240_GPIO_BASE+0x38,0);//GPIO12-GPIO15 seting to GPIO functionality
+        ath_reg_wr_nf(AR7240_GPIO_BASE+0x3C,0);//GPIO16-GPIO17 seting to GPIO functionality
+        gpio_oe &= ~((0x1<<0)|(0x1<<2)|(0x1<<12)|(0x1<<13)|(0x1<<14)|(0x1<<15)|(0x1<<16)|(0x1<<17));
+        gpio_oe |= (0x1<<1)|(0x1<<3)|(0x1<<4);//GPIO1 and GPIO3 4 only input
+        ath_reg_wr_nf(AR7240_GPIO_OE,gpio_oe);
+        //default value 
+        ath_reg_wr_nf(AR7240_GPIO_BASE+0xc,(0x1<<14)|(0x1<<16)); // out high
+        ath_reg_wr_nf(AR7240_GPIO_BASE+0x10,(0x1<<0)|(0x1<<2)|(0x1<<12)|(0x1<<13)|(0x1<<15)|(0x1<<17)); //out low
 #endif
 }
 

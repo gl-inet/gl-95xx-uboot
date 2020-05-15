@@ -587,7 +587,7 @@ void main_loop (void)
                                 printf("\n\nButton was pressed for %d sec...\nHTTP server is starting for firmware update...\n\n", counter); 
                                 rst_key_5s = 1;
                                // run_command("dhcpd start", 0);
-                                printf("{ \"system\": \"goweb\"  }");
+                                mifi_v3_send_msg("{ \"system\": \"goweb\"  }");
                                 rst_key_5s = 0;
 						    	NetLoopHttpd();
                                 bootdelay = -1;

@@ -1224,6 +1224,7 @@ void gl_upgrade_send_msg(char *msg)
 	if(eth->state == ETH_STATE_PASSIVE){//命令执行过程中可能会导致网卡关闭，需要重新初始化
 			bd_t *bd = gd->bd;
 			eth_init(bd);
+			udelay(100000);
 		}
 	memcpy(rep[1],msg,msg_len);
     //dev_init_up();

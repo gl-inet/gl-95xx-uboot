@@ -263,7 +263,7 @@ static int ath_gmac_check_link(ath_gmac_mac_t *mac)
 	mac->link = link;
 
 	if(!mac->link) {
-		printf("%s link down\n",mac->dev->name);
+	//	printf("%s link down\n",mac->dev->name);
 		return 0;
 	}
 

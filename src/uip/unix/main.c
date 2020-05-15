@@ -94,7 +94,7 @@ void dev_received(volatile char * inpkt, int len)
 
             p = strstr(uip_buf+42,"gl_inet_U_G");
 
-	        memcpy(firmware_name, (const void *)(p+13),11+4);
+	    memcpy(firmware_name, (const void *)(p+13),11+4);
             printf("file:%s\n",firmware_name);
             //NetTxPacket = KSEG1ADDR(NetTxPacket);
             //memcpy((void *)NetTxPacket, file_name_ok, 52);
@@ -178,14 +178,14 @@ dev_init(void)
     timer_set(&eth_timer, CLOCK_SECOND*2);
     bd_t *bd = gd->bd;
     if(rst_key_5s){
-        printf("{ \"system\": \"gouboot\" }");
+        mifi_v3_send_msg("{ \"system\": \"gouboot\" }");
     }
     printf("\n");
     while(1){
 	    if(ctrlc()){
 		    eth_halt();
-			printf("\n eth init aborted!\n\n");
-			return(-1);
+		    printf("\n eth init aborted!\n\n");
+		    return(-1);
 	    }
         if(timer_expired(&eth_timer)) {
             timer_reset(&eth_timer);
@@ -199,7 +199,7 @@ dev_init(void)
             if(eth_ok ==1){
                 eth_state = 1;
             if(rst_key_5s){
-                printf("{ \"system\": \"cable_ok\" }");
+               mifi_v3_send_msg("{ \"system\": \"cable_ok\" }");
             }
             printf("\n");
             break;
@@ -210,7 +210,7 @@ dev_init(void)
                     eth_state = 0;
                     eth_no = 0;
                 if(rst_key_5s){
-                    printf("{ \"system\": \"cable_no\" }");
+                    mifi_v3_send_msg("{ \"system\": \"cable_no\" }");
                 }
                     printf("\n");
                     printf("Please insert the network cable\n");
@@ -358,11 +358,11 @@ uip_main(void)
 		   uip_len is set to a value > 0. */
         if(dhcpd_end){
             dhcpd_end = 0;
-			eth_halt();
-			NetUipLoop=0;
-			printf("dhcpd end\n");
+//	    eth_halt();
+	    NetUipLoop=0;
+	    printf("dhcpd end\n");
             if(rst_key_5s){
-                printf("{ \"system\": \"goweb\" }");
+                mifi_v3_send_msg("{ \"system\": \"goweb\" }");
             }
             printf("\n");
             rst_key_5s = 0;
@@ -383,15 +383,14 @@ uip_main(void)
 		    uip_arp_out1();
             dev_send();
             if(dhcpd_end){
-                dhcpd_end = 0;
-			    eth_halt();
-			    NetUipLoop=0;
-			    printf("dhcpd end\n");
+		dhcpd_end = 0;
+//		eth_halt();
+		NetUipLoop=0;
+		printf("dhcpd end\n");
                 if(rst_key_5s){
-                    printf("{ \"system\": \"goweb\" }");
+                    mifi_v3_send_msg("{ \"system\": \"goweb\" }");
                 }
                 rst_key_5s = 0;
-                printf("\nHit \"gl\" key to stop\n");
                 printf("\nHit \"gl\" key to stop\n");
 			    return(-1);
             }

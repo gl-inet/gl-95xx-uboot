@@ -56,7 +56,6 @@ ath_usb_initial_config(void)
 #define unset(a)	(~(a))
 
 	if (ath_reg_rd(RST_BOOTSTRAP_ADDRESS) & RST_BOOTSTRAP_TESTROM_ENABLE_MASK) {
-
 		ath_reg_rmw_set(RST_RESET_ADDRESS, RST_RESET_USB_HOST_RESET_SET(1));
 		udelay(1000);
 		ath_reg_rmw_set(RST_RESET_ADDRESS, RST_RESET_USB_PHY_RESET_SET(1));
@@ -103,6 +102,7 @@ void ath_gpio_config(void)
 	ath_reg_rmw_set(GPIO_OUT_FUNCTION1_ADDRESS, GPIO_OUT_FUNCTION1_ENABLE_GPIO_4_SET(0x80));
 	ath_reg_rmw_set(GPIO_OE_ADDRESS, (1 << 4));
 	/* Set GPIO 13 as input for LED functionality to be OFF during bootup */
+
 	ath_reg_rmw_set(GPIO_OE_ADDRESS, (1 << 13));
 	/* Turn off JUMPST_LED and 5Gz LED during bootup */
 	ath_reg_rmw_set(GPIO_OE_ADDRESS, (1 << 15));
@@ -141,8 +141,8 @@ ath_mem_config(void)
 	ath_reg_wr_nf(RST_RESET_ADDRESS, reg32);
 
 	ath_usb_initial_config();
-
 	ath_gpio_config();
+
 #endif /* !defined(CONFIG_ATH_EMULATION) */
 	all_led_off();
 	status_led_on();

@@ -37,6 +37,10 @@ extern const struct fsdata_file file_404_html;
 extern const struct fsdata_file file_flashing_html;
 extern const struct fsdata_file file_fail_html;
 
+extern const struct fsdata_file file_switch_enabled_html;
+extern const struct fsdata_file file_switch_disabled_html;
+extern const struct fsdata_file file_index_sw_en_html;
+
 extern int webfailsafe_ready_for_upgrade;
 extern int webfailsafe_upgrade_type;
 extern ulong NetBootFileXferSize;
@@ -340,6 +344,40 @@ void httpd_appcall(void){
 					return;
 				}
 
+				//Web add DIP switch enable function
+				if(hs->state == STATE_UPLOAD_REQUEST){
+					char *start = NULL;
+
+					// end bufor data with NULL
+					uip_appdata[uip_len] = '\0';
+					
+					if ((char *)strstr((char*)uip_appdata, "gl_yes")){
+						setenv("boot_dev", "on");
+						saveenv();
+
+						fs_open(file_switch_enabled_html.name, &fsfile);
+						httpd_state_reset();
+						hs->state = STATE_FILE_REQUEST;
+						hs->dataptr = (u8_t *)fsfile.data;
+						hs->upload = fsfile.len;
+						uip_send(hs->dataptr, (hs->upload > uip_mss() ? uip_mss() : hs->upload));
+						return;
+					}
+					else if((char *)strstr((char*)uip_appdata, "gl_no")){
+						setenv("boot_dev", "off");
+						saveenv();
+
+						fs_open(file_switch_disabled_html.name, &fsfile);
+						httpd_state_reset();
+						hs->state = STATE_FILE_REQUEST;
+						hs->dataptr = (u8_t *)fsfile.data;
+						hs->upload = fsfile.len;
+						uip_send(hs->dataptr, (hs->upload > uip_mss() ? uip_mss() : hs->upload));
+						return;
+					}			
+					
+				}
+
 				// get file or firmware upload?
 				if(hs->state == STATE_FILE_REQUEST){
 
@@ -367,7 +405,13 @@ void httpd_appcall(void){
 
 					if(uip_appdata[4] == ISO_slash && uip_appdata[5] == 0){
 						printf("we are here 1 \n");
-						fs_open(file_index_html.name, &fsfile);
+						//Display the status of the enable switch option
+						if (strcmp(getenv("boot_dev"),"on")==0){
+							fs_open(file_index_sw_en_html.name, &fsfile);
+						}
+						else{
+							fs_open(file_index_html.name, &fsfile);
+						}
 					} else {
 						printf("we are here 2 \n");
 						// check if we have requested file
@@ -520,7 +564,6 @@ void httpd_appcall(void){
 					} else {
 						printf("Data will be downloaded at 0x%X in RAM\n", WEBFAILSAFE_UPLOAD_RAM_ADDRESS);
 					}
-
 					if(httpd_findandstore_firstchunk()){
 						data_start_found = 1;
 					} else {

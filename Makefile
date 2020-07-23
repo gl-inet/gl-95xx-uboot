@@ -122,4 +122,5 @@ $(eval $(call Package/qca-legacy-uboot/nor,x750-4g))
 $(eval $(call Package/qca-legacy-uboot/nor,ar300m))
 $(eval $(call Package/qca-legacy-uboot/nor,mifi-v3))
 $(eval $(call Package/qca-legacy-uboot/nor,x300b))
+$(eval $(call Package/qca-legacy-uboot/nor,xe300))
 

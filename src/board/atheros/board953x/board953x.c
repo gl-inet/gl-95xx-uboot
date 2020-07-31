@@ -145,7 +145,11 @@ ath_mem_config(void)
 
 #endif /* !defined(CONFIG_ATH_EMULATION) */
 	all_led_off();
+
+#ifndef CONFIG_XE300 //XE300 not change status led
 	status_led_on();
+#endif
+
 	return ath_ddr_find_size();
 }
 
@@ -399,6 +403,18 @@ void all_led_off(void)
 	g4_led_off();
 }
 
+void exception_led_indicator()
+{
+#ifdef CONFIG_XE300
+	char i=0;
+	for(i=0;i<3;i++){
+		all_led_on();
+		udelay(500000);//500ms
+		all_led_off();
+		udelay(500000);//500ms
+	}
+#endif
+}
 void gpio17_select_out()
 {
 unsigned int tmp=0;

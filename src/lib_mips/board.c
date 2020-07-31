@@ -323,7 +323,9 @@ void board_init_f(ulong bootflag)
 
 void board_init_r (gd_t *id, ulong dest_addr)
 {
+#ifndef CONFIG_XE300 //XE300 not change status led
 	status_led_on();//GL -- led on
+#endif
 	cmd_tbl_t *cmdtp;
 	ulong size;
 	extern void malloc_bin_reloc (void);

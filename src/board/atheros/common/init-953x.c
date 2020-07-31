@@ -389,7 +389,7 @@ static int ath_init_gpio()
 	//default value is low for output pin
 	ath_reg_wr_nf(AR7240_GPIO_BASE+0x10,(0x1<<0)|(0x1<<4)|(0x1<<14)|(0x1<<15)|(0x1<<16)|(0x1<<17));
 	//set all led to off
-	ath_reg_wr_nf(AR7240_GPIO_BASE+0xc,(0x1<<1)|(0x1<<2)|(0x1<<10)|(0x1<<12));
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0xc,(0x1<<1)|(0x1<<10)|(0x1<<12)|(0x1<<13));
 #endif
 }
 

@@ -445,6 +445,7 @@ unsigned long bootcount_load(void)
 
 void bootcount_store(ulong count)
 {
+#ifdef CONFIG_AR300M
         char buf[10];
         sprintf(buf, "%ld", count);
         setenv("bootcount", buf);
@@ -452,6 +453,7 @@ void bootcount_store(ulong count)
         run_command("protect off all",0);
         green_led_off();
         red_led_off();
+#endif
 }
 
 extern int reset_button_status(void);

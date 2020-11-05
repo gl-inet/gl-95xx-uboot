@@ -341,6 +341,9 @@ static int ath_init_gpio()
 {
 #ifdef CONFIG_X750_4G
        unsigned int old  = ath_reg_rd(AR7240_GPIO_OE);
+       unsigned int gpio_fun1  = ath_reg_rd(AR7240_GPIO_BASE+0x30);
+       gpio_fun1 &= ~0xff;//GPIO4
+       ath_reg_wr_nf(AR7240_GPIO_BASE+0x30,gpio_fun1);//GPIO4 seting to GPIO functionality
        old  &= ~(1<<1);
        ath_reg_wr(AR7240_GPIO_OE,old);
        ath_reg_wr_nf(AR7240_GPIO_CLEAR, 1<<1);

@@ -341,6 +341,9 @@ static int ath_init_gpio()
 {
 #ifdef CONFIG_X750_4G
        unsigned int old  = ath_reg_rd(AR7240_GPIO_OE);
+       unsigned int gpio_fun1  = ath_reg_rd(AR7240_GPIO_BASE+0x30);
+       gpio_fun1 &= ~0xff;//GPIO4
+       ath_reg_wr_nf(AR7240_GPIO_BASE+0x30,gpio_fun1);//GPIO4 seting to GPIO functionality
        old  &= ~(1<<1);
        ath_reg_wr(AR7240_GPIO_OE,old);
        ath_reg_wr_nf(AR7240_GPIO_CLEAR, 1<<1);
@@ -371,6 +374,25 @@ static int ath_init_gpio()
         //default value 
         ath_reg_wr_nf(AR7240_GPIO_BASE+0xc,(0x1<<15)|(0x1<<16)|(0x1<<17)); // out high
         ath_reg_wr_nf(AR7240_GPIO_BASE+0x10,(0x1<<0)|(0x1<<2)|(0x1<<12)|(0x1<<14)); //out low
+#elif  CONFIG_XE300
+	unsigned int gpio_fun1  = ath_reg_rd(AR7240_GPIO_BASE+0x30);
+	unsigned int gpio_fun2  = ath_reg_rd(AR7240_GPIO_BASE+0x34);
+	unsigned int gpio_oe = ath_reg_rd(AR7240_GPIO_OE);
+	gpio_fun1 &= ~0xff;//GPIO4 set to GPIO
+	gpio_fun2 &= ~(0xff<<16);//GPIO10 set to GPIO
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0x2c,0X160000);//GPIO0,1,3 set to GPIO functionality,GPIO2 set to UART
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0x30,gpio_fun1);//GPIO4 set to GPIO functionality
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0x34,gpio_fun2);//GPIO10 set to GPIO functionality
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0x38,0);//GPIO12-GPIO15 set to GPIO functionality
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0x3C,0);//GPIO16-GPIO17 set to GPIO functionality
+	//set GPIO direction
+	gpio_oe &= ~((0x1<<0)|(0x1<<1)|(0x1<<4)|(0x1<<10)|(0x1<<12)|(0x1<<13)|(0x1<<14)|(0x1<<15)|(0x1<<16)|(0x1<<17));
+	gpio_oe |= (0x1<<3);//Only GPIO3 is input
+	ath_reg_wr_nf(AR7240_GPIO_OE,gpio_oe);
+	//default value is low for output pin
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0x10,(0x1<<0)|(0x1<<4)|(0x1<<14)|(0x1<<15)|(0x1<<16)|(0x1<<17));
+	//set all led to off
+	ath_reg_wr_nf(AR7240_GPIO_BASE+0xc,(0x1<<1)|(0x1<<10)|(0x1<<12)|(0x1<<13));
 #endif
 }
 

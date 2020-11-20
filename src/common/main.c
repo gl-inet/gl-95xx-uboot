@@ -260,6 +260,7 @@ extern uint show_kernel(uint addr);
 extern char gl_set_uip_info();
 extern void gl_upgrade_probe();
 extern void gl_upgrade_listen();
+extern void exception_led_indicator();
 
 extern char gl_probe_upgrade;
 static __inline__ int abortboot(int bootdelay)
@@ -444,6 +445,7 @@ unsigned long bootcount_load(void)
 
 void bootcount_store(ulong count)
 {
+#ifdef CONFIG_AR300M
         char buf[10];
         sprintf(buf, "%ld", count);
         setenv("bootcount", buf);
@@ -451,6 +453,7 @@ void bootcount_store(ulong count)
         run_command("protect off all",0);
         green_led_off();
         red_led_off();
+#endif
 }
 
 extern int reset_button_status(void);
@@ -703,6 +706,7 @@ void main_loop (void)
 
     //	 printf("\n## Error: failed to boot linux !\nHTTPD server is starting...##\n\n");
     //   run_command("dhcpd start", 0);
+    	exception_led_indicator();
         run_command("dhcpd start", 0);
 	    NetLoopHttpd();
         bootdelay = -1;

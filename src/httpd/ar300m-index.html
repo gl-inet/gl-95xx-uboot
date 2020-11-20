@@ -16,6 +16,16 @@
 				<input type="submit" value="Update gl-inet firmware"><br>
 			</form>
 
+
+			<p>Enable the DIP switch of the router, it allows you to select the firmware to boot from <strong>Nor flash</strong> or <strong>Nand flash</strong>.<br>
+				1.Left side (near the USB ) --> Nand flash &emsp; 2.Right side --> Nor flash.&emsp;
+				<a href="https://docs.gl-inet.com/en/3/hardware/ar300m/#method-1-set-boot-count" target="_blank">Reference docs >></a></p>
+			<form method="post" enctype="multipart/form-data">
+				<input type="radio" name="enable_switch"  value="gl_yes">Enable switch&emsp;&emsp;
+				<input type="radio" name="enable_switch" checked="checked" value="gl_no" >Disable switch&emsp;&emsp;
+				<input type="submit" value="Submit" > 
+			</form>
+			
 			<div class="i w">
 				<strong>WARNINGS</strong>
 				<ul>

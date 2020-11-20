@@ -57,6 +57,10 @@ int check_nand_data()
 
 int check_tftp_file()
 {
+#ifdef CONFIG_XE300
+	return 0;
+#endif
+
 #ifndef CONFIG_GL_RSA
 	run_command("run lf",0);
 #endif

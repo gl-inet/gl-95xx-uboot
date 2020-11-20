@@ -594,6 +594,7 @@ void httpd_appcall(void){
 							}
 
 							webfailsafe_post_done = 0;
+							uip_file_post_done = 0;
 							webfailsafe_upload_failed = 0;
 						}
 
@@ -668,6 +669,7 @@ void httpd_appcall(void){
 						printf("\n\n");
 
 						// end of post upload
+						uip_file_post_done = 1;
 						webfailsafe_post_done = 1;
 						NetBootFileXferSize = (ulong)hs->upload_total;
 

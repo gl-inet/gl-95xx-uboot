@@ -372,8 +372,8 @@ static int ath_init_gpio()
         gpio_oe |= (0x1<<1)|(0x1<<3)|(0x1<<4)|(0x1<<13);//GPIO1 and GPIO3 4 only input
         ath_reg_wr_nf(AR7240_GPIO_OE,gpio_oe);
         //default value 
-        ath_reg_wr_nf(AR7240_GPIO_BASE+0xc,(0x1<<15)|(0x1<<16)|(0x1<<17)); // out high
-        ath_reg_wr_nf(AR7240_GPIO_BASE+0x10,(0x1<<0)|(0x1<<2)|(0x1<<12)|(0x1<<14)); //out low
+        ath_reg_wr_nf(AR7240_GPIO_BASE+0xc,(0x1<<15)|(0x1<<17)); // out high
+        ath_reg_wr_nf(AR7240_GPIO_BASE+0x10,(0x1<<0)|(0x1<<2)|(0x1<<12)|(0x1<<14)|(0x1<<16)); //out low
 #elif  CONFIG_XE300
 	unsigned int gpio_fun1  = ath_reg_rd(AR7240_GPIO_BASE+0x30);
 	unsigned int gpio_fun2  = ath_reg_rd(AR7240_GPIO_BASE+0x34);

@@ -469,7 +469,7 @@ ath_spi_nand_hw_init(ath_spi_nand_sc_t *sc)
 		return -EIO;
 	}
 
-	return ath_spi_nand_ecc(sc, 1);
+	return ath_spi_nand_ecc(sc, 0);
 }
 
 static inline void
@@ -1434,6 +1434,13 @@ static struct ath_spi_nand_priv ath_spi_nand_ids[] = {
 	{ /* Macronix - MX35LF1GE4AB */
 		0xc2,				/* manufacturer code */
 		{ 0x12, 0x00, 0x00, 0x00 },	/* Device id */
+		0x02,				/* ecc error code */
+		(128 << 20),			/* 1G bit */
+		64,				/* oob size */
+	},
+	{ /* Macronix - MX35LF1G24AD */
+		0xc2,				/* manufacturer code */
+		{ 0x14, 0x00, 0x00, 0x00 },	/* Device id */
 		0x02,				/* ecc error code */
 		(128 << 20),			/* 1G bit */
 		64,				/* oob size */

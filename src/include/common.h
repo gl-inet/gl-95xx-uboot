@@ -209,7 +209,7 @@ int	autoscript (ulong addr);
 void	print_image_hdr (image_header_t *hdr);
 
 extern ulong load_addr;		/* Default Load Address */
-
+extern char new_spi_nand_flag;
 /* common/cmd_nvedit.c */
 int	env_init     (void);
 void	env_relocate (void);

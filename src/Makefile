@@ -2051,6 +2051,10 @@ endif
 	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/uboot.html
 	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/art.html
 	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/index.html
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/index_check_nand.html
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/ar300m-index.html
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/vendors/general/index_sw_en.html
+	@sed -i "s/version:.*</version:`date +%y.%m.%d`</g" $(TOPDIR)/httpd/index.html
 ifdef BOOT_ADDR
 	@echo '#define GL_BOOT_ADDR	$(BOOT_ADDR)'	>>include/config.h
 endif

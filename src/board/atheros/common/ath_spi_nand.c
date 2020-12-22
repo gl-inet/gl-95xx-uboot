@@ -178,7 +178,26 @@ typedef struct {
 
 ath_spi_nand_sc_t ath_spi_nand_sc;
 
-
+uint8_t new_spi_nand_list[][2]={
+    {0xc8,0x51}, //GD5F1GQ5UE
+    {0xc2,0x12}, //MX35LF1GE4AB
+};
+char new_spi_nand_flag=0;
+char check_new_spi_nand(uint8_t mfr,uint8_t did)
+{
+    int i = 0;
+    int listlen=0;
+    listlen=sizeof(new_spi_nand_list)/2;
+    for(i=0; i<listlen; i++) {
+        if(mfr==new_spi_nand_list[i][0]) {
+            if(did==new_spi_nand_list[i][1]) {
+                printf("new spi nand\n");
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 #define	bbt_index				(sizeof(*sc->bbt) * 8 / 2)
 #define ATH_NAND_BLK_DONT_KNOW			0x0
 #define ATH_NAND_BLK_GOOD			0x1
@@ -1520,6 +1539,9 @@ static void *ath_spi_nand_priv_init(void)
 		}
 	}
 done:
+    if(check_new_spi_nand(vendor_id(id),device_id(id))){
+         new_spi_nand_flag = 1;
+    }
 	printk("MFR:%d,DID:%d\n",vendor_id(id),device_id(id));
 	if (!priv)
 		return NULL;

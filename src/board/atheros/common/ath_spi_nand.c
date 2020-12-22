@@ -1539,9 +1539,9 @@ static void *ath_spi_nand_priv_init(void)
 		}
 	}
 done:
-    if(check_new_spi_nand(vendor_id(id),device_id(id))){
-         new_spi_nand_flag = 1;
-    }
+//    if(check_new_spi_nand(vendor_id(id),device_id(id))){
+//         new_spi_nand_flag = 1;
+//    }
 	printk("MFR:%d,DID:%d\n",vendor_id(id),device_id(id));
 	if (!priv)
 		return NULL;

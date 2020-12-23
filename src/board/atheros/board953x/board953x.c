@@ -403,9 +403,9 @@ void all_led_off(void)
 	g4_led_off();
 }
 
+#ifdef CONFIG_XE300
 void exception_led_indicator()
 {
-#ifdef CONFIG_XE300
 	char i=0;
 	for(i=0;i<3;i++){
 		all_led_on();
@@ -413,8 +413,8 @@ void exception_led_indicator()
 		all_led_off();
 		udelay(500000);//500ms
 	}
-#endif
 }
+#endif
 void gpio17_select_out()
 {
 unsigned int tmp=0;

@@ -1294,13 +1294,13 @@ int gl_upgrade_cmd_handle(char *cmd)
 				printf("\nDo cmd\n");
 				setenv("gl_do_cmd",gl_cmd_msg[i]);
 				run_command("run gl_do_cmd", 0);
-			}
+            }
 			else{
 				break;
 			}
 		}
-		memset(gl_cmd_msg,0,sizeof(gl_cmd_msg));
-		gl_upgrade_send_msg("glroute:ok");
+        memset(gl_cmd_msg,0,sizeof(gl_cmd_msg));
+        gl_upgrade_send_msg("glroute:ok");
 	}
 	else if (strncmp(cmd,"dhcp",4)==0){
 		run_command("dhcpd start", 0);
@@ -1335,9 +1335,9 @@ int gl_upgrade_cmd_handle(char *cmd)
 
 void gl_upgrade_hook(volatile uchar * inpkt, int len)
 {
-	char pk_buf[1502]={0};
+	unsigned char pk_buf[1518]={0};
 	//int i=0;
-	memcpy(pk_buf, (const char *)inpkt, len);
+	memcpy(pk_buf, inpkt, len);
 	/*for(i=0;i<len;i++){
 		printf("%d:%02X,",i,pk_buf[i]);
 	}*/
@@ -1435,7 +1435,7 @@ NetReceive(volatile uchar * inpkt, int len)
 	x = ntohs(et->et_protlen);
 
 #ifdef ET_DEBUG
-	printf("packet received\n");
+	printf("packet received2\n");
 #endif
 
 	if (x < 1514) {
@@ -1696,6 +1696,7 @@ NetReceive(volatile uchar * inpkt, int len)
 		} else if (ip->ip_p != IPPROTO_UDP) {	/* Only UDP packets */
 			return;
 		}
+        
 
 #ifdef CONFIG_UDP_CHECKSUM
 		if (ip->udp_xsum != 0) {

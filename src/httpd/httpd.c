@@ -33,6 +33,7 @@ extern void green_led_off(void);
 extern void red_led_off(void);
 // html files
 extern const struct fsdata_file file_index_html;
+extern const struct fsdata_file file_index_check_nand_html;
 extern const struct fsdata_file file_404_html;
 extern const struct fsdata_file file_flashing_html;
 extern const struct fsdata_file file_fail_html;
@@ -410,7 +411,7 @@ void httpd_appcall(void){
 							fs_open(file_index_sw_en_html.name, &fsfile);
 						}
 						else{
-							fs_open(file_index_html.name, &fsfile);
+                            fs_open(file_index_check_nand_html.name, &fsfile);
 						}
 					} else {
 						printf("we are here 2 \n");

@@ -277,7 +277,6 @@ static __inline__ int abortboot(int bootdelay)
 		console_assign (stderr, "serial");
 	}
 #endif
-
 #ifdef CONFIG_MENUPROMPT
 	printf(CONFIG_MENUPROMPT, bootdelay);
 #else
@@ -706,7 +705,9 @@ void main_loop (void)
 
     //	 printf("\n## Error: failed to boot linux !\nHTTPD server is starting...##\n\n");
     //   run_command("dhcpd start", 0);
+# ifdef CONFIG_XE300
     	exception_led_indicator();
+# endif
         run_command("dhcpd start", 0);
 	    NetLoopHttpd();
         bootdelay = -1;

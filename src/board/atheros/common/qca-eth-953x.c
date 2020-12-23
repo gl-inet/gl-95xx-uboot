@@ -297,7 +297,7 @@ static int ath_gmac_check_link(ath_gmac_mac_t *mac)
 	mac->duplex = duplex;
 	mac->speed = speed;
 
-	printf("dup %d speed %d\n", duplex, speed);
+//	printf("dup %d speed %d\n", duplex, speed);
 
 	ath_gmac_set_mac_duplex(mac,duplex);
 

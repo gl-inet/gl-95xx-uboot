@@ -425,7 +425,7 @@ typedef unsigned short uip_stats_t;
  *
  * \hideinitializer
  */
-#define UIP_BUFSIZE     1022
+#define UIP_BUFSIZE     1500
 
 
 /**

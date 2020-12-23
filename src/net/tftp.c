@@ -167,7 +167,6 @@ TftpSend (void)
 		len = pkt - xp;
 		break;
 	}
-
 	NetSendUDPPacket(NetServerEther, NetServerIP, TftpServerPort, TftpOurPort, len);
 }
 

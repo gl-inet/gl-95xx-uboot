@@ -41,6 +41,7 @@ extern const struct fsdata_file file_fail_html;
 extern const struct fsdata_file file_switch_enabled_html;
 extern const struct fsdata_file file_switch_disabled_html;
 extern const struct fsdata_file file_index_sw_en_html;
+extern const struct fsdata_file file_index_sw_dis_html;
 
 extern int webfailsafe_ready_for_upgrade;
 extern int webfailsafe_upgrade_type;
@@ -407,12 +408,17 @@ void httpd_appcall(void){
 					if(uip_appdata[4] == ISO_slash && uip_appdata[5] == 0){
 						printf("we are here 1 \n");
 						//Display the status of the enable switch option
+#ifdef CONFIG_AR300M
 						if (strcmp(getenv("boot_dev"),"on")==0){
 							fs_open(file_index_sw_en_html.name, &fsfile);
 						}
 						else{
-                            fs_open(file_index_check_nand_html.name, &fsfile);
+                            fs_open(file_index_sw_dis_html.name, &fsfile);
 						}
+#else
+                        fs_open(file_index_check_nand_html.name, &fsfile);
+
+#endif
 					} else {
 						printf("we are here 2 \n");
 						// check if we have requested file

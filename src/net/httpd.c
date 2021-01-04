@@ -119,14 +119,36 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 #endif
 
 	} else if(upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_NOR_FIRMWARE){
-		sprintf(buf,
-				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX",
+        char com_rc = check_nand();
+#ifdef CONFIG_X750
+        if(1==com_rc){
+            sprintf(buf,
+				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX;nand erase",
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
 				size,
 				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
 			    //update to nor flash 
 				size);
+        }
+        else{
+            sprintf(buf,
+				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX",
+				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
+				size,
+				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
+				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
+				size);
+        }
+#else
+		sprintf(buf,
+				"erase 0x%lX +0x%lX; cp.b 0x%lX 0x%lX 0x%lX",
+				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
+				size,
+				WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
+				WEBFAILSAFE_UPLOAD_KERNEL_ADDRESS,
+				size);
+#endif
 	}
 		
 	else {

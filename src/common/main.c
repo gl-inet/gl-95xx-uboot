@@ -466,7 +466,28 @@ void main_loop (void)
 	int rc = 1;
 	int flag;
 #endif
+#ifdef GPIO_SIM_SELECT //sim select 0:sim1 1:sim2
+	//printf("Function:%s Line:%d GPIO_SIM_SELECT=%d\n",__func__, __LINE__, GPIO_SIM_SELECT);
+	set_gpio_value(GPIO_SIM_SELECT,0);   
+#endif
 
+#ifdef GPIO_4G1_POWER //enable 4G modem 1 power 0:enable 1:disable
+	//printf("Function:%s Line:%d GPIO_4G1_POWER=%d\n",__func__, __LINE__, GPIO_4G1_POWER);
+	set_gpio_value(GPIO_4G1_POWER,0);   
+#endif
+
+#ifdef GPIO_4G2_POWER //enable 4G modem 2 power 0:enable 1:disable
+	set_gpio_value(GPIO_4G2_POWER,0); 
+	//printf("Function:%s Line:%d GPIO_4G2_POWER=%d\n",__func__, __LINE__, GPIO_4G2_POWER);
+#endif
+//#ifdef GPIO_WATCHDOG1 //pull up watchdog gpio
+//	set_gpio_value(GPIO_WATCHDOG1,1); 
+	//printf("Function:%s Line:%d GPIO_WATCHDOG1=%d\n",__func__, __LINE__, GPIO_WATCHDOG1);
+//#endif
+
+#ifdef GPIO_WATCHDOG2
+	gpio_watchdog_toggle(20);  //stop watchdog
+#endif
 
 	int counter = 0;
 
@@ -680,6 +701,11 @@ void main_loop (void)
                         default:break;
                 }
         check_tftp_file();
+        
+#ifdef GPIO_WATCHDOG2
+		gpio_watchdog_toggle(5); //start x1200 watchdog
+#endif
+
         select_boot_dev();
         if(nand_boot_failed){
 			sprintf(boot_cmd,"bootm 0x%x",GL_BOOT_ADDR);

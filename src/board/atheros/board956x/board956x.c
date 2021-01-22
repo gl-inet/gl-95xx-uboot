@@ -394,6 +394,74 @@ tmp = ath_reg_rd(AR7240_GPIO_FUNC4);
 ath_reg_wr_nf(AR7240_GPIO_FUNC4, (tmp & 0x00ff) );
 
 }
+#if defined(GPIO_4G1_POWER)  || defined(GPIO_4G2_POWER) || defined(GPIO_WATCHDOG1) || defined(GPIO_SIM_SELECT)
+/*void get_gpio_status()
+{
+	unsigned int gpio_oe = ath_reg_rd(AR7240_GPIO_OE);
+	unsigned int gpio_in = ath_reg_rd(AR7240_GPIO_IN);
+	unsigned int gpio_out = ath_reg_rd(AR7240_GPIO_OUT);
+	printf("Function:%s Line:%d gpio_oe=%x\n",__func__, __LINE__, gpio_oe);
+	printf("Function:%s Line:%d gpio_in=%x\n",__func__, __LINE__, gpio_in);
+	printf("Function:%s Line:%d gpio_out=%x\n",__func__, __LINE__, gpio_out);
+}*/
+void set_gpio_value(char gpionum,char value)
+{
+	//printf("Function:%s Line:%d GPIO Number:%d GPIO Value:%d\n", __func__, __LINE__, gpionum,value);
+	unsigned int led_GPIO_OE  = ath_reg_rd(AR7240_GPIO_OE);
+	//printf("Function:%s Line:%d ath_reg_rd(AR7240_GPIO_OE)=%x\n",__func__, __LINE__, led_GPIO_OE);
+	if(led_GPIO_OE & (1<<gpionum))
+	{
+		led_GPIO_OE  &= ~(1<<gpionum);
+		ath_reg_wr(AR7240_GPIO_OE,led_GPIO_OE);//set output
+	}
+	if(value == 0)
+		ath_reg_wr_nf(AR7240_GPIO_CLEAR, 1<<gpionum);
+	else
+		ath_reg_wr_nf(AR7240_GPIO_SET, 1<<gpionum);
+	//printf("Function:%s Line:%d ath_reg_rd(AR7240_GPIO_OE)=%x\n",__func__, __LINE__, ath_reg_rd(AR7240_GPIO_OE));
+}
+#endif
+
+#if defined(GPIO_WATCHDOG2)
+void disable_jtag(void)
+{
+	ath_reg_wr_nf(GPIO_FUNCTION_ADDRESS, ath_reg_rd(GPIO_FUNCTION_ADDRESS) | GPIO_FUNCTION_DISABLE_JTAG_MASK);
+}
+
+void gpio_watchdog_up()
+{	
+	unsigned int led_GPIO_OE  = ath_reg_rd(AR7240_GPIO_OE);
+	if(led_GPIO_OE & (1<<GPIO_WATCHDOG2))
+	{
+		led_GPIO_OE  &= ~(1<<GPIO_WATCHDOG2);
+		ath_reg_wr(AR7240_GPIO_OE,led_GPIO_OE);
+	}
+	ath_reg_wr_nf(AR7240_GPIO_SET, 1<<GPIO_WATCHDOG2);
+}
+
+void gpio_watchdog_down()
+{
+	unsigned int led_GPIO_OE  = ath_reg_rd(AR7240_GPIO_OE);
+	if(led_GPIO_OE & (1<<GPIO_WATCHDOG2))
+	{
+		led_GPIO_OE  &= ~(1<<GPIO_WATCHDOG2);
+		ath_reg_wr(AR7240_GPIO_OE,led_GPIO_OE);
+	}
+	ath_reg_wr_nf(AR7240_GPIO_CLEAR, 1<<GPIO_WATCHDOG2);
+}
+
+void gpio_watchdog_toggle(int count)
+{
+	disable_jtag();
+	while(count--)
+	{
+		gpio_watchdog_up();
+		udelay(10000);
+		gpio_watchdog_down();
+		udelay(10000);
+	}
+}
+#endif
 
 #define GPIO_SWITCH_LOAD 0x3 //GPIO 0 and 1
 unsigned  int switch_boot_load()
